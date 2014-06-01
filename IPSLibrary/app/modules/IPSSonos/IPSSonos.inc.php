@@ -191,8 +191,8 @@
 	 * @return boolean Funktions Ergebnis, TRUE für OK, FALSE für Fehler
 	 */
 	function IPSSonos_SetMute($roomName, $value) {
-		$server = IPSSonos_GetServer($instanceId);
-		return $server->SendData(IPSSONOS_CMD_AUDIO, $roomId, IPSSONOS_FNC_MUTE, $value);
+		$server = IPSSonos_GetServer();
+		return $server->SendData(IPSSONOS_CMD_AUDIO, $roomName, IPSSONOS_FNC_MUTE, $value);
 	}
 
 	/**

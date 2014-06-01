@@ -389,7 +389,13 @@
 								$this->LogInf('Vorheriges Lied im Raum '.$roomName.' abspielen.');
 								$function 	= IPSSONOS_FNC_PLAY;								
 								$value 		= IPSSONOS_TRA_PLAY;								
-							break;									
+							break;
+						case IPSSONOS_FNC_MUTE:	
+								$sonos->SetMute($value);
+								$this->LogInf('Mute im Raum '.$roomName.' gesetzt auf: '.$value);
+								$function 	= IPSSONOS_FNC_MUTE;																
+							break;								
+							
 						default:
 							break;
 					}	
