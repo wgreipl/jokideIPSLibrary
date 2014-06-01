@@ -88,7 +88,7 @@
 	$Mobile_Order         = $moduleManager->GetConfigValueInt('Order', 'Mobile');
 	$Mobile_Icon          = $moduleManager->GetConfigValue('Icon', 'Mobile');
 
-	$IPSSonosRoomInstallation     = $moduleManager->GetConfigValueBool('IPSSonosRoomInstallation');
+//	$IPSSonosRoomInstallation     = $moduleManager->GetConfigValueBool('IPSSonosRoomInstallation');
 
 	/* ---------------------------------------------------------------------- */
 	/* IPSSonos Installation                                                  */
@@ -117,7 +117,7 @@
 //	CreateProfile_Count ('IPSSonos_Bass',         IPSSONOS_VAL_BASS_MIN,         1, IPSSONOS_VAL_BASS_MAX,         "", "%");
 //	CreateProfile_Count ('IPSSonos_Balance',      IPSSONOS_VAL_BALANCE_MIN,      1, IPSSONOS_VAL_BALANCE_MAX,      "", "%");
 //	CreateProfile_Count ('IPSSonos_InputGain',    IPSSONOS_VAL_INPUTGAIN_MIN,    1, IPSSONOS_VAL_INPUTGAIN_MAX,    "", "%");
-	CreateProfile_Associations ('IPSSonos_InputSelect', array(IPSSONOS_CONFIG_INPUTNAME1, IPSSONOS_CONFIG_INPUTNAME2, IPSSONOS_CONFIG_INPUTNAME3, IPSSONOS_CONFIG_INPUTNAME4));
+//	CreateProfile_Associations ('IPSSonos_InputSelect', array(IPSSONOS_CONFIG_INPUTNAME1, IPSSONOS_CONFIG_INPUTNAME2, IPSSONOS_CONFIG_INPUTNAME3, IPSSONOS_CONFIG_INPUTNAME4));
 	CreateProfile_Switch ('IPSSonos_Mute',            'Aus', 'An', "", -1, 0x00ff00);
 //	CreateProfile_Switch ('IPSSonos_KeepAliveStatus', 'KeepAlive Error', 'KeepAlive OK', "", 0xaa0000, 0x00ff00);
 //	CreateProfile_Switch ('IPSSonos_Busy',            'Bereit', 'Aktiv', "", -1, 0x0000ff);
@@ -142,7 +142,7 @@
 	// ===================================================================================================
 	// Add Rooms
 	// ===================================================================================================
-	if ($IPSSonosRoomInstallation) {
+
 		$RoomId=0;
 		$RoomConfig = IPSSonos_GetRoomConfiguration();
 
@@ -193,7 +193,7 @@
 //		if (IPSSONOS_CONFIG_COM_PORT<>'') {
 //			SetValue($id_Port,      $id_IOComPort);
 //		}
-	}
+
 
 	// ----------------------------------------------------------------------------------------------------------------------------
 	// Webfront Installation
@@ -217,7 +217,7 @@
 //		CreateLink('Debug Modus',          $id_ModeServerDebug,  $instanceIdServer, 110);
 //		CreateLink('PowerRequest Modus',   $id_ModePowerRequest, $instanceIdServer, 120);
 
-		if ($IPSSonosRoomInstallation) {
+
 //			$roomNames = array(1=>IPSSONOS_CONFIG_ROOMNAME1, 2=>IPSSONOS_CONFIG_ROOMNAME2, 3=>IPSSONOS_CONFIG_ROOMNAME3);
 //			for ($roomId=1;$roomId<=3;$roomId++) {
 			$RoomId = 1;
@@ -238,27 +238,12 @@
 //				CreateLink('Höhen',                IPS_GetObjectIDByIdent(IPSSONOS_VAR_TREBLE,      $roomInstanceId),   $roomCategoryId, 70);
 //				CreateLink('Mitten',               IPS_GetObjectIDByIdent(IPSSONOS_VAR_MIDDLE,      $roomInstanceId),   $roomCategoryId, 80);
 //				CreateLink('Bass',                 IPS_GetObjectIDByIdent(IPSSONOS_VAR_BASS,        $roomInstanceId),   $roomCategoryId, 90);
-				CreateLink('Remote',               IPS_GetObjectIDByIdent(IPSSONOS_VAR_REMOTE,      $roomInstanceId),   $roomCategoryId, 90);
+//				CreateLink('Remote',               IPS_GetObjectIDByIdent(IPSSONOS_VAR_REMOTE,      $roomInstanceId),   $roomCategoryId, 90);
 
 				$RoomId = $RoomId + 1;
 			}
-		}
-		$instanceIdPlayer = IPSUtil_ObjectIDByPath('Hardware.NetPlayer.MediaPlayer', true);
-		if ($instanceIdPlayer!==false) {
-			CreateLink('MediaPlayer', IPS_GetObjectIDByName('Status', $instanceIdPlayer),   $categoryIdWebFrontRight, 100);
 
-			$categoryIdPlayer = CreateCategory('MediaPlayer', $categoryIdWebFrontRight, 100);
-			CreateLink('Lautstärke',   IPS_GetObjectIDByName('Lautstärke',   $instanceIdPlayer),   $categoryIdPlayer, 10);
-			CreateLink('Status',       IPS_GetObjectIDByName('Status',       $instanceIdPlayer),   $categoryIdPlayer, 20);
-			CreateLink('Titel',        IPS_GetObjectIDByName('Titel',        $instanceIdPlayer),   $categoryIdPlayer, 30);
-			CreateLink('Titeldatei',   IPS_GetObjectIDByName('Titeldatei',   $instanceIdPlayer),   $categoryIdPlayer, 40);
-			CreateLink('Titellänge',   IPS_GetObjectIDByName('Titellänge',   $instanceIdPlayer),   $categoryIdPlayer, 50);
-			CreateLink('Titelposition',IPS_GetObjectIDByName('Titelposition',$instanceIdPlayer),   $categoryIdPlayer, 60);
-			CreateLink('Wiederholen',  IPS_GetObjectIDByName('Wiederholen',  $instanceIdPlayer),   $categoryIdPlayer, 70);
-			CreateLink('Zufall',       IPS_GetObjectIDByName('Zufall',       $instanceIdPlayer),   $categoryIdPlayer, 80);
-			CreateLink('Lautstärke',   IPS_GetObjectIDByName('Lautstärke',   $instanceIdPlayer),   $categoryIdPlayer, 90);
-			CreateLink('Lautstärke',   IPS_GetObjectIDByName('Lautstärke',   $instanceIdPlayer),   $categoryIdPlayer, 100);
-		}
+
 
 		$tabItem = $WFC10_TabPaneItem.$WFC10_TabItem;
 		DeleteWFCItems($WFC10_ConfigId, $tabItem);
@@ -270,68 +255,6 @@
 		ReloadAllWebFronts();
 	}
 
-	// ----------------------------------------------------------------------------------------------------------------------------
-	// Mobile Installation
-	// ----------------------------------------------------------------------------------------------------------------------------
-	if ($Mobile_Enabled ) {
-		$mobileId  = CreateCategoryPath($Mobile_Path, $Mobile_PathOrder, $Mobile_PathIcon);
-		$mobileId  = CreateCategoryPath($Mobile_Path.'.'.$Mobile_Name, $Mobile_Order, $Mobile_Icon);
-		EmptyCategory($mobileId);
-
-		$instanceIdServer = CreateCategory('IPSSonos Server', $mobileId, 0);
-//		CreateLink('Power',                $id_Power,            $instanceIdServer, 10);
-//		CreateLink('Verbindung',           $id_Connection,       $instanceIdServer, 20);
-//		CreateLink('Gerät Aktiv',          $id_Busy,             $instanceIdServer, 30);
-//		CreateLink('Eingangs Buffer',      $id_InputBuffer,      $instanceIdServer, 40);
-//		CreateLink('Letzter Befehl',       $id_LastCommand,      $instanceIdServer, 50);
-//		CreateLink('Letzter Fehler',       $id_LastError,        $instanceIdServer, 60);
-//		CreateLink('"KeepAlive" Status',   $id_KeepAliveStatus,  $instanceIdServer, 80);
-//		CreateLink('Acknowledge Modus',    $id_ModeAcknowledge,  $instanceIdServer, 90);
-//		CreateLink('EmulateState Modus',   $id_ModeEmulateState, $instanceIdServer, 100);
-//		CreateLink('Debug Modus',          $id_ModeServerDebug,  $instanceIdServer, 110);
-//		CreateLink('PowerRequest Modus',   $id_ModePowerRequest, $instanceIdServer, 120);
-
-//		CreateLink('IPSSonos Server',   $id_Power,            $mobileId, 0);
-		if ($IPSSonosRoomInstallation) {
-			$RoomId = 1;
-
-			foreach ($RoomConfig as $GroupName=>$GroupData) {
-				$roomCategoryId = CreateCategory($GroupName. ' ('.$GroupName.')', $mobileId, 10*$RoomId);
-				$roomInstanceId = IPS_GetObjectIdByIdent($GroupName, $CategoryIdData);
-
-				CreateLink($GroupName. ' ('.$GroupName.')', IPS_GetObjectIDByIdent(IPSSONOS_VAR_ROOMPOWER, $roomInstanceId),   $mobileId, $RoomId);
-
-				CreateLink('Power',                IPS_GetObjectIDByIdent(IPSSONOS_VAR_ROOMPOWER,   $roomInstanceId),   $roomCategoryId, 10);
-//				CreateLink('Eingang',              IPS_GetObjectIDByIdent(IPSSONOS_VAR_INPUTSELECT, $roomInstanceId),   $roomCategoryId, 20);
-//				CreateLink('Verstärkung',          IPS_GetObjectIDByIdent(IPSSONOS_VAR_INPUTGAIN,   $roomInstanceId),   $roomCategoryId, 30);
-				CreateLink('Lautstärke',           IPS_GetObjectIDByIdent(IPSSONOS_VAR_VOLUME,      $roomInstanceId),   $roomCategoryId, 40);
-				CreateLink('Muting',               IPS_GetObjectIDByIdent(IPSSONOS_VAR_MUTE,        $roomInstanceId),   $roomCategoryId, 50);
-				CreateLink('Player',               IPS_GetObjectIDByIdent(IPSSONOS_VAR_TRANSPORT,        $roomInstanceId),   $roomCategoryId, 50);
-//				CreateLink('Balance',              IPS_GetObjectIDByIdent(IPSSONOS_VAR_BALANCE,     $roomInstanceId),   $roomCategoryId, 60);
-//				CreateLink('Höhen',                IPS_GetObjectIDByIdent(IPSSONOS_VAR_TREBLE,      $roomInstanceId),   $roomCategoryId, 70);
-//				CreateLink('Mitten',               IPS_GetObjectIDByIdent(IPSSONOS_VAR_MIDDLE,      $roomInstanceId),   $roomCategoryId, 80);
-//				CreateLink('Bass',                 IPS_GetObjectIDByIdent(IPSSONOS_VAR_BASS,        $roomInstanceId),   $roomCategoryId, 90);
-
-				$RoomId = $RoomId + 1;
-			}
-		}
-		$instanceIdPlayer = IPSUtil_ObjectIDByPath('Hardware.NetPlayer.MediaPlayer', true);
-		if ($instanceIdPlayer!==false) {
-			CreateLink('MediaPlayer', IPS_GetObjectIDByName('Status', $instanceIdPlayer),   $mobileId, 100);
-
-			$categoryIdPlayer = CreateCategory('MediaPlayer', $mobileId, 100);
-			CreateLink('Lautstärke',   IPS_GetObjectIDByName('Lautstärke',   $instanceIdPlayer),   $categoryIdPlayer, 10);
-			CreateLink('Status',       IPS_GetObjectIDByName('Status',       $instanceIdPlayer),   $categoryIdPlayer, 20);
-			CreateLink('Titel',        IPS_GetObjectIDByName('Titel',        $instanceIdPlayer),   $categoryIdPlayer, 30);
-			CreateLink('Titeldatei',   IPS_GetObjectIDByName('Titeldatei',   $instanceIdPlayer),   $categoryIdPlayer, 40);
-			CreateLink('Titellänge',   IPS_GetObjectIDByName('Titellänge',   $instanceIdPlayer),   $categoryIdPlayer, 50);
-			CreateLink('Titelposition',IPS_GetObjectIDByName('Titelposition',$instanceIdPlayer),   $categoryIdPlayer, 60);
-			CreateLink('Wiederholen',  IPS_GetObjectIDByName('Wiederholen',  $instanceIdPlayer),   $categoryIdPlayer, 70);
-			CreateLink('Zufall',       IPS_GetObjectIDByName('Zufall',       $instanceIdPlayer),   $categoryIdPlayer, 80);
-			CreateLink('Lautstärke',   IPS_GetObjectIDByName('Lautstärke',   $instanceIdPlayer),   $categoryIdPlayer, 90);
-			CreateLink('Lautstärke',   IPS_GetObjectIDByName('Lautstärke',   $instanceIdPlayer),   $categoryIdPlayer, 100);
-		}
-	}
 
 	/** @}*/
 ?>

@@ -39,37 +39,10 @@
 	 *
 	 */
 	function IPSSonos_Custom_SetRoomPower($room_name, $value) {
-	
-	//*-------------------------------------------------------------*
-			switch ($room_name) {
-				case 'Wohnzimmer':
-					if ($value==true) {
-						IPS_RunScript(37562 );
-						IPS_RunScript(41531 );
-					}
-					else {
-						IPS_RunScript(18951 );
-						IPS_RunScript(30649 );
-					}
-					break;
-					
-				case 'Schlafzimmer':
-					
-					break;
-
-				case 'Kueche':
-					IPSUtils_Include ('IPSLight.inc.php', 'IPSLibrary::app::modules::IPSLight');
-					if ($value==true) {
-						IPSLight_SetSwitchByName('Kueche_Powermate', true);
-					}
-					else {
-						IPSLight_SetSwitchByName('Kueche_Powermate', false);
-					}					
-					break;					
-			}	
 
 		return true;
-	}
+
+		}
 
 	/** @}*/
 

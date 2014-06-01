@@ -17,9 +17,7 @@
 
 	function IPSSonos_GetRoomConfiguration() {
 		return array(
-			'Wohnzimmer'		=>		array('192.168.20.108', 'RINCON_000E5829F33A01400'),
-			'Schlafzimmer'		=>		array('192.168.20.105', 'RINCON_000E5872E10801400'),
-			'Kueche'			=>		array('192.168.20.103', 'RINCON_000E582732C001400'),
+
 			);
 	}
 	/** @}*/
