@@ -117,7 +117,7 @@ class PHPSonos {
 
 
 /*
- * urn:schemas-upnp-org:device:ZonePlayer:1
+ * urn:schemas-upnp-org:device:ZonePlayer:1 
  * http://play.er.i.p:1400/xml/zone_player.xml
  */
 
@@ -125,7 +125,7 @@ class PHPSonos {
  * urn:upnp-org:serviceId:AlarmClock
  *	Not fully implemented
  */
-
+ 
 /**
  * Returns a list of alarms from sonos device
  *
@@ -180,7 +180,7 @@ Content-Length: '. strlen($xml) .'
         }
         return $liste;
      }
-
+     
  /**
  * Updates an existing alarm
  *
@@ -194,7 +194,7 @@ Content-Length: '. strlen($xml) .'
  * @param string $id 				Id of the Alarm
  * @param string $startzeit 		StartLocalTime
  * @param string $duration       Duration
- * @param string $welchetage 		Recurrence
+ * @param string $welchetage 		Recurrence 
  * @param string $an 				Enabled? (true/false)
  * @param string $roomid         Room UUID
  * @param string $programm 		ProgramUri
@@ -237,10 +237,10 @@ SOAPACTION: "urn:schemas-upnp-org:service:AlarmClock:1#UpdateAlarm"
         $this->sendPacket($content);
     }
 
-
+	
 /* urn:upnp-org:serviceId:AudioIn */
 	// Not fully implemented
-
+	
  /**
  * Get information of devices inputs
  *
@@ -297,8 +297,8 @@ $returnContent = $this->XMLsendPacket($content);
 
 		return $AudioInReturn; //Assoziatives Array
  	}
-
-
+ 
+	
 /* urn:upnp-org:serviceId:DeviceProperties */
 
 
@@ -410,7 +410,7 @@ $returnContent = $this->XMLsendPacket($content);
 
 
 		$xmlParser = xml_parser_create("UTF-8");
-		xml_parser_set_option($xmlParser, XML_OPTION_TARGET_ENCODING, "ISO-8859-1");
+		xml_parser_set_option($xmlParser, XML_OPTION_TARGET_ENCODING, "ISO-8859-1"); 
 		xml_parse_into_struct($xmlParser, $returnContent, $vals, $index);
 		xml_parser_free($xmlParser);
 
@@ -481,7 +481,7 @@ $returnContent = $this->XMLsendPacket($content);
       		if($state) { $state = "On"; } else { $state = "Off"; }
       	}
 		}
-
+		
 $content='POST /DeviceProperties/Control HTTP/1.1
 CONNECTION: close
 HOST: '.$this->address.':1400
@@ -694,7 +694,7 @@ $content=$header . '
 Content-Length: '. strlen($xml) .'
 
 '. $xml;
-  return $this->sendPacket($content);
+  return $this->sendPacket($content); 
 
  	}
 
@@ -881,7 +881,7 @@ $content=$header . 'Content-Length: '. strlen($xml) .'
 '. $xml;
 
 	$this->sendPacket($content);
-
+		
 
 	}
  /**
@@ -964,7 +964,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#Play"
 
 		$this->sendPacket($content);
 	}
-
+	
 /**
  * NEXT
  *
@@ -978,7 +978,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#Play"
  */
 	public function Next()
 	{
-
+	
 $content='POST /MediaRenderer/AVTransport/Control HTTP/1.1
 CONNECTION: close
 HOST: '.$this->address.':1400
@@ -990,7 +990,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#Next"
 
 		$this->sendPacket($content);
 	}
-
+	
 /**
  * PREVIOUS
  *
@@ -1004,7 +1004,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#Next"
  */
 	public function Previous()
 	{
-
+	
 $content='POST /MediaRenderer/AVTransport/Control HTTP/1.1
 CONNECTION: close
 HOST: '.$this->address.':1400
@@ -1016,7 +1016,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#Previous"
 
 		$this->sendPacket($content);
 	}
-
+	
 /**
  * SEEK
  *
@@ -1055,7 +1055,7 @@ Content-Length: '. strlen($xml) .'
 
 
 	}
-
+	
 /**
  * REWIND
  *
@@ -1072,7 +1072,7 @@ Content-Length: '. strlen($xml) .'
  */
 	public function Rewind()
 	{
-
+	
 $content='POST /MediaRenderer/AVTransport/Control HTTP/1.1
 CONNECTION: close
 HOST: '.$this->address.':1400
@@ -1084,7 +1084,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#Seek"
 
 		$this->sendPacket($content);
 	}
-
+	
 /**
  * Sets volume for a player
  *
@@ -1112,7 +1112,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:RenderingControl:1#SetVolume"
 
 		$this->sendPacket($content);
 	}
-
+	
 /**
  * Gets current volume information from player
  *
@@ -1137,7 +1137,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:RenderingControl:1#GetVolume"
 
 		return (int)$this->sendPacket($content);
 	}
-
+	
 /**
  * Sets mute/ unmute for a player
  *
@@ -1166,7 +1166,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:RenderingControl:1#SetMute"
 
 		$this->sendPacket($content);
 	}
-
+	
 /**
  * Gets mute/ unmute status for a player
  *
@@ -1192,7 +1192,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:RenderingControl:1#GetMute"
 
 		return (bool)$this->sendPacket($content);
 	}
-
+	
 
 /**
  * Sets Playmode for a renderer (could affect more than one zone!)
@@ -1226,7 +1226,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#SetPlayMode"
 
 		$this->sendPacket($content);
 	}
-
+	
 /**
  * Gets transport settings for a renderer
  *
@@ -1272,8 +1272,8 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#GetTransportSettings"
 			return Array (
 				"repeat" => true,
 				"shuffle" => false
-			);
-
+			);	
+		
 		} elseif (strstr($returnContent, "SHUFFLE_NOREPEAT") !== false) {
 			return Array (
 				"repeat" => false,
@@ -1355,7 +1355,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#GetTransportInfo"
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><s:Body><u:GetTransportInfo xmlns:u="urn:schemas-upnp-org:service:AVTransport:1"><InstanceID>0</InstanceID></u:GetTransportInfo></s:Body></s:Envelope>';
 
 		$returnContent = $this->sendPacket($content);
-
+		
 		if (strstr($returnContent, "PLAYING") !== false) {
 		   return 1;
 		} elseif (strstr($returnContent, "PAUSED_PLAYBACK") !== false) {
@@ -1363,7 +1363,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#GetTransportInfo"
 		} elseif (strstr($returnContent, "STOPPED") !== false) {
 		   return 3;
 		}
-
+		
 	}
 
 /**
@@ -1372,7 +1372,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#GetTransportInfo"
  * - <b>Device:</b> urn:schemas-upnp-org:device:MediaRenderer:1
  * - <b>WSDL:</b> fill in
  * - <b>Service:</b> urn:schemas-upnp-org:service:AVTransport:1
- * - <b>Returns:</b>
+ * - <b>Returns:</b> 
  * <code>
  * Array 	(
  * [CurrentURI] => http://192.168.0.2:10243/WMPNSSv4/1458092455/0_ezg1ODYxQzMwLTEyNzgtNDc0Ri05MkQ0LTQxNzE1MDQ0MjMyMX0uMC40.mp3
@@ -1380,7 +1380,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#GetTransportInfo"
  * [title] => Car Crazy Cutie                         )
  *  </code>
  *
- * - <b>NOTE:</b> SOAP returns CurrentURIMetaData this has to be parsed
+ * - <b>NOTE:</b> SOAP returns CurrentURIMetaData this has to be parsed 
  *
  * @return Array
  */
@@ -1405,7 +1405,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#GetMediaInfo"
 		xml_parser_free($xmlParser);
 
 		$mediaInfo = Array();
-
+	
 
 
 		if (isset($vals[$index["CURRENTURI"][0]]["value"])) {
@@ -1416,7 +1416,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#GetMediaInfo"
 
 		if (isset($vals[$index["CURRENTURIMETADATA"][0]]["value"])) {
 			$mediaInfo["CurrentURIMetaData"] = $vals[$index["CURRENTURIMETADATA"][0]]["value"];
-
+			
 		// print_r($index);
 		// print_r($vals);
 
@@ -1449,7 +1449,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#GetMediaInfo"
  * - <b>Device:</b> urn:schemas-upnp-org:device:MediaRenderer:1
  * - <b>WSDL:</b> fill in
  * - <b>Service:</b> urn:schemas-upnp-org:service:AVTransport:1
- * - <b>Returns:</b> Example:
+ * - <b>Returns:</b> Example: 
  * <code> Array
  *  (
  *    [position] => 0:00:59
@@ -1468,7 +1468,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#GetMediaInfo"
  *    [trackURI] =>
  *    [Track] => 1
  *  ) </code>
- *
+ * 
  * @return Array
  */
 	public function GetPositionInfo()
@@ -1483,24 +1483,24 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#GetPositionInfo"
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><s:Body><u:GetPositionInfo xmlns:u="urn:schemas-upnp-org:service:AVTransport:1"><InstanceID>0</InstanceID></u:GetPositionInfo></s:Body></s:Envelope>';
 
 		$returnContent = $this->sendPacket($content);
-
+	
 		$position = substr($returnContent, stripos($returnContent, "NOT_IMPLEMENTED") - 7, 7);
 
 		$returnContent = substr($returnContent, stripos($returnContent, '&lt;'));
 		$returnContent = substr($returnContent, 0, strrpos($returnContent, '&gt;') + 4);
 		$returnContent = str_replace(array("&lt;", "&gt;", "&quot;", "&amp;", "%3a", "%2f", "%25"), array("<", ">", "\"", "&", ":", "/", "%"), $returnContent);
-
-
+		
+		
 		$xmlParser = xml_parser_create("UTF-8");
 		xml_parser_set_option($xmlParser, XML_OPTION_TARGET_ENCODING, "UTF-8");
 		xml_parse_into_struct($xmlParser, $returnContent, $vals, $index);
 		xml_parser_free($xmlParser);
-
+	
 		$positionInfo = Array ();
-
+		
 		$positionInfo["position"] = $position;
 		$positionInfo["RelTime"] = $position;
-
+		
 
 		if (isset($index["RES"]) and isset($vals[$index["RES"][0]]["attributes"]["DURATION"])) {
 			$positionInfo["duration"] = $vals[$index["RES"][0]]["attributes"]["DURATION"];
@@ -1517,33 +1517,33 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#GetPositionInfo"
 			$positionInfo["URI"] = "";
 			$positionInfo["TrackURI"] = "";
 		}
-
+		
 		if (isset($index["DC:CREATOR"]) and isset($vals[$index["DC:CREATOR"][0]]["value"])) {
 			$positionInfo["artist"] = $vals[$index["DC:CREATOR"][0]]["value"];
 		} else {
 			$positionInfo["artist"] = "";
 		}
-
+		
 		if (isset($index["DC:TITLE"]) and isset($vals[$index["DC:TITLE"][0]]["value"])) {
 			$positionInfo["title"] = $vals[$index["DC:TITLE"][0]]["value"];
 		} else {
 			$positionInfo["title"] = "";
 		}
-
+		
 		if (isset($index["UPNP:ALBUM"]) and isset($vals[$index["UPNP:ALBUM"][0]]["value"])) {
 			$positionInfo["album"] = $vals[$index["UPNP:ALBUM"][0]]["value"];
 		} else {
 			$positionInfo["album"] = "";
 		}
-
+		
 		if (isset($index["UPNP:ALBUMARTURI"]) and isset($vals[$index["UPNP:ALBUMARTURI"][0]]["value"])) {
 			$positionInfo["albumArtURI"] = "http://" . $this->address . ":1400" . $vals[$index["UPNP:ALBUMARTURI"][0]]["value"];
 		} else {
-
+		
 /*
 		         // Ask Radiotime (added br as a test)
 					$mi=$this->GetMediaInfo();
-
+				
 					$station=preg_replace("#(.*)x-sonosapi-stream:(.*?)\?sid(.*)#is",'$2',$mi['CurrentURI']);
 				//	echo "\n!!!!!!!!!!!!!!!!!!!!!!!!!!".$station."########\n";
 					if (($station!="")and $station[0]=="s"){
@@ -1553,7 +1553,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#GetPositionInfo"
 					//	echo $albumArtURI;
 						$positionInfo["albumArtURI"] = $albumArtURI;
 					} else{
-
+					
 */
 							$positionInfo["albumArtURI"] = "";
 /*					}
@@ -1565,17 +1565,17 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#GetPositionInfo"
 		} else {
 			$positionInfo["albumArtist"] = "";
 		}
-
+		
 		if (isset($index["UPNP:ORIGINALTRACKNUMBER"]) and isset($vals[$index["UPNP:ORIGINALTRACKNUMBER"][0]]["value"])) {
 			$positionInfo["albumTrackNumber"] = $vals[$index["UPNP:ORIGINALTRACKNUMBER"][0]]["value"];
 		} else {
 			$positionInfo["albumTrackNumber"] = "";
 		}
-
+		
 		if (isset($index["R:STREAMCONTENT"]) and isset($vals[$index["R:STREAMCONTENT"][0]]["value"])) {
 			$positionInfo["streamContent"] = $vals[$index["R:STREAMCONTENT"][0]]["value"];
-
-
+			
+			
 		} else {
 			$positionInfo["streamContent"] = "";
 		}
@@ -1593,14 +1593,14 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#GetPositionInfo"
 			xml_parse_into_struct($xmlParser, $returnContent, $vals, $index);
 			xml_parser_free($xmlParser);
 	  }
-
+	 
 			if (isset($index["TRACKURI"][0]) and isset($vals[($index["TRACKURI"][0])]["value"])) {
 			$positionInfo["trackURI"] = $vals[($index["TRACKURI"][0])]["value"];
 			$positionInfo["TrackURI"] = $vals[($index["TRACKURI"][0])]["value"];
 			} else {
 				$positionInfo["trackURI"] = "";
 			}
-
+		
 			// Track Number in Playlist
          $returnContent = $this->XMLsendPacket($content);
 
@@ -1615,7 +1615,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#GetPositionInfo"
 			} else {
 				$positionInfo["Track"] = "";
 			}
-
+	
 		return $positionInfo;
 	}
 
@@ -1637,7 +1637,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#GetPositionInfo"
  * @return array
  */
 	public function SetRadio($radio,$Name="IP-Symcon Radio",$id="R:0/0/0",$parentID="R:0/0")
-	{
+	{ 
 	$MetaData="&lt;DIDL-Lite xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot; xmlns:r=&quot;urn:schemas-rinconnetworks-com:metadata-1-0/&quot; xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;&gt;&lt;item id=&quot;".$id."&quot; parentID=&quot;".$parentID."&quot; restricted=&quot;true&quot;&gt;&lt;dc:title&gt;".$Name."&lt;/dc:title&gt;&lt;upnp:class&gt;object.item.audioItem.audioBroadcast&lt;/upnp:class&gt;&lt;desc id=&quot;cdudn&quot; nameSpace=&quot;urn:schemas-rinconnetworks-com:metadata-1-0/&quot;&gt;SA_RINCON65031_&lt;/desc&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;";
 
  	$this->SetAVTransportURI($radio,$MetaData);
@@ -1740,7 +1740,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#RemoveAllTracksFromQueue
  */
 	public function AddToQueue($file)
 	{
-
+	
 $content='POST /MediaRenderer/AVTransport/Control HTTP/1.1
 CONNECTION: close
 HOST: '.$this->address.':1400
@@ -1752,7 +1752,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#AddURIToQueue"
 
 		$this->sendPacket($content);
 	}
-
+	
 /**
  * Removes track from queue (not the Playlist!!)
  *
@@ -1781,7 +1781,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#RemoveTrackFromQueue"
 
 		$this->sendPacket($content);
 	}
-
+	
 /**
  * Jumps directly to the track
  *
@@ -1798,7 +1798,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#RemoveTrackFromQueue"
  */
 	public function SetTrack($track)
 	{
-
+	
 $content='POST /MediaRenderer/AVTransport/Control HTTP/1.1
 CONNECTION: close
 HOST: '.$this->address.':1400
@@ -1810,7 +1810,7 @@ SOAPACTION: "urn:schemas-upnp-org:service:AVTransport:1#Seek"
 
 		$this->sendPacket($content);
 	}
-
+	
 
 /******************* // urn:schemas-upnp-org:device:MediaServer:1 ***********
 
@@ -1981,7 +1981,7 @@ Content-Length: '. strlen($xml) .'
             $title = $xml->container[$i];
             $title = $title->xpath('dc:title');
 				// br substring use cuts my playlist names at the 4th char
-
+			
 				$liste[$i]['title'] = (string)$title[0];
 					$liste[$i]['title']=preg_replace("/^(.+)\.m3u$/i","\\1",$liste[$i]['title']);
             $liste[$i]['typ'] = "Import";
@@ -2070,7 +2070,7 @@ return $liste;
  * - <b>Service:</b> urn:upnp-org:serviceId:ContentDirectory
  * - <b>Returns:</b> Array with metadata; please use upnp and sonos documentation to get an idea of the return
  *
- * @param string $value    ObjectID
+ * @param string $value    ObjectID 
  * @param string $meta     BrowseFlag
  * @param string $filter   Filter
  * @param string $sindex   SearchIndex
@@ -2192,7 +2192,7 @@ return $liste;
 ***************************************************************************/
 
 /**
- *
+ * 
  Get Now Playing information from Radiotime via opml
  *
  * - <b>NOTE:</b> it´s maybe better to use SOAP to get this information
@@ -2204,25 +2204,25 @@ return $liste;
  *
  * @return Array
  */
-
+ 
 // Note: Our partnerId is in here
 public function RadiotimeGetNowPlaying() // added br
     {
 	 $list["version"] = "";
     $list["status"] = "";
     $list["logo"] = "";
-
+    
     // Serial for Tunein is our MAC - prevents block / throttling (maybe we should shift this off)
 	 $zoneinfo=$this->GetZoneInfo($this->address);
 	 $serial=$zoneinfo['MACAddress'];
 
-
+    
 		         // Get mi
 					$mi=$this->GetMediaInfo();
 					// Filter out station id
 					$station=preg_replace("#(.*)x-sonosapi-stream:(.*?)\?sid(.*)#is",'$2',$mi['CurrentURI']);
-
-
+			
+				
 				   // Only Ask Radiotime / Tunein for valid stationids (!!)
 					if (($station!="")and $station[0]=="s"){
 					   // Ask with PHPSonos PartnerID and serial (mac)
@@ -2231,11 +2231,11 @@ public function RadiotimeGetNowPlaying() // added br
 						// echo "----". $content;
 						$list["version"]=preg_replace('#(.*)version="(.*?)\">(.*)#is','$2',$content);
 						$list["status"]=preg_replace('#(.*)<status>(.*?)\</status>(.*)#is','$2',$content);
-
-
+					
+						
 						$list["outline"]=preg_replace('#(.*)<body>(.*)<outline type="text" text="(.*?)\" guide_id="(.*)\" key#is','$2',$content);
-
-
+						
+					
 						$list["logo"]=preg_replace('#(.*)<LOGO>(.*?)\</LOGO>(.*)#is','$2',$content);
 						// TAG_DEBUG_DEEP for Intune-Throttling (or blocking!)
 						// echo "\n!!!!!!!!!!!!!!!!!INTUNE REQUEST EXECUTED!!!!!!!!!!!!!!\n";
@@ -2262,7 +2262,7 @@ return $list;
 		$fp = fsockopen($this->address, 1400 /* Port */, $errno, $errstr, 10);
 		if (!$fp)
 		    throw new Exception("Error opening socket: ".$errstr." (".$errno.")");
-
+		    
 		fputs ($fp, $content);
 		$ret = "";
 		$buffer = "";
@@ -2278,7 +2278,7 @@ return $list;
 		if(strpos($ret, "200 OK") === false)
 			throw new Exception("Error sending command: ".$ret);
 		$array = preg_split("/\n/", $ret);
-
+		
 		return $array[count($array) - 1];
 	}
 
@@ -2309,7 +2309,7 @@ return $list;
 // TAG_DEBUG_DEEP sendpacketdebug
 //		 echo "sendPacketDebug: "; //DEBUG
 //		  print_r($ret);
-
+		
 		$array = preg_split("/\n/", $ret);
 
 		return $array[count($array) - 1];

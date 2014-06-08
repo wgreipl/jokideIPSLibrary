@@ -36,7 +36,7 @@
 	$variableId    = $_IPS['VARIABLE'];
 	$variableValue = $_IPS['VALUE'];
 	$variableIdent = IPS_GetIdent($variableId);
-
+// $I = 10 / 0;
 	$serverId = IPSUtil_ObjectIDByPath('Program.IPSLibrary.data.modules.IPSSonos.IPSSonos_Server');
 	$instanceId = IPS_GetParent($variableId);
 	
@@ -44,12 +44,16 @@
 		$roomName = IPS_GetIdent($instanceId);
 	}
 	
+//	$server = new IPSSonos_Server($serverId);
 
 	switch($variableIdent) {
 
 
 		case IPSSONOS_VAR_ROOMPOWER:
 			IPSSonos_SetRoomPower($roomName, $variableValue);			
+			break;
+//		case IPSSONOS_VAR_BALANCE:
+//			IPSSonos_SetBalance($serverId , $roomId, $variableValue);
 			break;
 		case IPSSONOS_VAR_VOLUME:
 			IPSSonos_SetVolume($roomName, $variableValue);
@@ -68,7 +72,6 @@
 					break;
 				case IPSSONOS_TRA_PAUSE:
 					IPSSonos_Pause($roomName);
-					break;
 				case IPSSONOS_TRA_STOP:
 					IPSSonos_Stop($roomName);						
 					break;
@@ -78,19 +81,22 @@
 				default:
 					break;
 			}
-			break;
-		case IPSSONOS_VAR_PLAYLIST:
-			IPSSonos_PlayPlaylistByID($roomName, $variableValue);
-			break;
-		case IPSSONOS_VAR_RADIOSTATION:
-			IPSSonos_PlayRadiostationByID($roomName, $variableValue);
-			break;			
-		case IPSSONOS_VAR_SHUFFLE:
-			IPSSonos_SetShuffle($roomName, $variableValue);
-			break;
-		case IPSSONOS_VAR_REPEAT:
-			IPSSonos_SetRepeat($roomName, $variableValue);
-			break;			
+			
+//		case IPSSONOS_VAR_TREBLE:
+//			IPSSonos_SetTreble($serverId , $roomId, $variableValue);
+//			break;
+//		case IPSSONOS_VAR_MIDDLE:
+//			IPSSonos_SetMiddle($serverId , $roomId, $variableValue);
+//			break;
+//		case IPSSONOS_VAR_BASS:
+//			IPSSonos_SetBass($serverId , $roomId, $variableValue);
+//			break;
+//		case IPSSONOS_VAR_INPUTSELECT:
+//			IPSSonos_SetInputSelect($serverId , $roomId, $variableValue);
+//			break;
+//		case IPSSONOS_VAR_INPUTGAIN:
+//			IPSSonos_SetInputGain($serverId , $roomId, $variableValue);
+//			break;
 		default:
 			break;
 	}
