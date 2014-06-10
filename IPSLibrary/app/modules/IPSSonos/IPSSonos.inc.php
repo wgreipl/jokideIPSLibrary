@@ -292,11 +292,23 @@
 	 * @param int $roomId Raum der ausgelesen werden soll (0-3)
 	 * @return boolean Status Muting
 	 */
-	function IPSSonos_GetMute($instanceId, $roomId) {
+	function IPSSonos_GetMute($roomName) {
 		$server = IPSSonos_GetServer($instanceId);
 		return $server->GetData(IPSSONOS_CMD_AUDIO, $roomId, IPSSONOS_FNC_MUTE, null);
 	}
-
+	
+	/**
+	 * Switch Mute
+	 *
+	 * @param int $instanceId ID des IPSSonos Servers
+	 * @param int $roomId Raum der ausgelesen werden soll (0-3)
+	 * @return boolean Status Muting
+	 */
+	function IPSSonos_SwitchMute($roomName) {
+		$server = IPSSonos_GetServer($instanceId);
+		return $server->GetData(IPSSONOS_CMD_AUDIO, $roomId, IPSSONOS_FNC_MUTE, null);
+	}
+	
 	/**
 	 * Get Server
 	 *

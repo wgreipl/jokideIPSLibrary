@@ -16,87 +16,81 @@
 	 * along with the IPSLibrary. If not, see http://www.gnu.org/licenses/gpl.txt.
 	 */    
 
-	 /**@addtogroup IPSSonos
+	 /**@addtogroup IPSxbmc
 	 * @{
 	 *
-	 * @file          IPSSonosChangeSettings.ips.php
+	 * @file          IPSxbmcChangeSettings.ips.php
 	 * @author        Jörg Kling
 	 *
 	 * @version
 	 * Version 2.50.1, 31.01.2012<br/>
 	 * AudioMax Action Script
 	 *
-	 * Dieses Script ist als Action Script für diverse IPSSonos Variablen hinterlegt, um
+	 * Dieses Script ist als Action Script für diverse IPSxbmc Variablen hinterlegt, um
 	 * eine Änderung über das WebFront zu ermöglichen.
 	 *
 	 */
 
- 	include_once 'IPSSonos.inc.php';
+ 	include_once 'IPSxbmc.inc.php';
 
 	$variableId    = $_IPS['VARIABLE'];
 	$variableValue = $_IPS['VALUE'];
 	$variableIdent = IPS_GetIdent($variableId);
-// $I = 10 / 0;
-	$serverId = IPSUtil_ObjectIDByPath('Program.IPSLibrary.data.modules.IPSSonos.IPSSonos_Server');
+
+	$serverId = IPSUtil_ObjectIDByPath('Program.IPSLibrary.data.modules.IPSxbmc.IPSxbmc_Server');
 	$instanceId = IPS_GetParent($variableId);
 	
 	if ($serverId<>$instanceId) {
 		$roomName = IPS_GetIdent($instanceId);
 	}
 	
-//	$server = new IPSSonos_Server($serverId);
 
 	switch($variableIdent) {
 
 
-		case IPSSONOS_VAR_ROOMPOWER:
-			IPSSonos_SetRoomPower($roomName, $variableValue);			
+		case IPSxbmc_VAR_ROOMPOWER:
+			IPSxbmc_SetRoomPower($roomName, $variableValue);			
 			break;
-//		case IPSSONOS_VAR_BALANCE:
-//			IPSSonos_SetBalance($serverId , $roomId, $variableValue);
+		case IPSxbmc_VAR_VOLUME:
+			IPSxbmc_SetVolume($roomName, $variableValue);
 			break;
-		case IPSSONOS_VAR_VOLUME:
-			IPSSonos_SetVolume($roomName, $variableValue);
+		case IPSxbmc_VAR_MUTE:
+			IPSxbmc_SetMute($roomName, $variableValue);
 			break;
-		case IPSSONOS_VAR_MUTE:
-			IPSSonos_SetMute($roomName, $variableValue);
-			break;
-		case IPSSONOS_VAR_TRANSPORT:
+		case IPSxbmc_VAR_TRANSPORT:
 		
 			switch($variableValue) {
-				case IPSSONOS_TRA_PREVIOUS:
-					IPSSonos_PREVIOUS($roomName);				
+				case IPSxbmc_TRA_PREVIOUS:
+					IPSxbmc_PREVIOUS($roomName);				
 					break;			
-				case IPSSONOS_TRA_PLAY:
-					IPSSonos_Play($roomName);				
+				case IPSxbmc_TRA_PLAY:
+					IPSxbmc_Play($roomName);				
 					break;
-				case IPSSONOS_TRA_PAUSE:
-					IPSSonos_Pause($roomName);
-				case IPSSONOS_TRA_STOP:
-					IPSSonos_Stop($roomName);						
+				case IPSxbmc_TRA_PAUSE:
+					IPSxbmc_Pause($roomName);
 					break;
-				case IPSSONOS_TRA_NEXT:
-					IPSSonos_NEXT($roomName);				
+				case IPSxbmc_TRA_STOP:
+					IPSxbmc_Stop($roomName);						
+					break;
+				case IPSxbmc_TRA_NEXT:
+					IPSxbmc_NEXT($roomName);				
 					break;					
 				default:
 					break;
 			}
-			
-//		case IPSSONOS_VAR_TREBLE:
-//			IPSSonos_SetTreble($serverId , $roomId, $variableValue);
-//			break;
-//		case IPSSONOS_VAR_MIDDLE:
-//			IPSSonos_SetMiddle($serverId , $roomId, $variableValue);
-//			break;
-//		case IPSSONOS_VAR_BASS:
-//			IPSSonos_SetBass($serverId , $roomId, $variableValue);
-//			break;
-//		case IPSSONOS_VAR_INPUTSELECT:
-//			IPSSonos_SetInputSelect($serverId , $roomId, $variableValue);
-//			break;
-//		case IPSSONOS_VAR_INPUTGAIN:
-//			IPSSonos_SetInputGain($serverId , $roomId, $variableValue);
-//			break;
+			break;
+		case IPSxbmc_VAR_PLAYLIST:
+			IPSxbmc_PlayPlaylistByID($roomName, $variableValue);
+			break;
+		case IPSxbmc_VAR_RADIOSTATION:
+			IPSxbmc_PlayRadiostationByID($roomName, $variableValue);
+			break;			
+		case IPSxbmc_VAR_SHUFFLE:
+			IPSxbmc_SetShuffle($roomName, $variableValue);
+			break;
+		case IPSxbmc_VAR_REPEAT:
+			IPSxbmc_SetRepeat($roomName, $variableValue);
+			break;			
 		default:
 			break;
 	}

@@ -180,8 +180,15 @@
 					$IPSSonosRoom = new IPSSonos_Room($roomInstanceId);
 				}
 			}
-
-			return $IPSSonosRoom;
+			
+			if ($IPSSonosRoom) {
+				$result = $IPSSonosRoom;
+			}
+			else {
+				$result = false;
+				$this->LogErr('Raum '.$roomName.' nicht in der Konfiguration gefunden!');
+			}
+			return $result;
 		}
 
 		/**
@@ -457,14 +464,18 @@
 					}
 
 					// Update variables of room
-					$room->setvalue($command, $function, $value);						
+					if ($result) $room->setvalue($command, $function, $value);						
 					break;
 				
 				case IPSSONOS_CMD_ROOM:
-				
+
 					// Sonos initialisieren
 					$room = $this->GetRoom($roomName);
 					$sonos = new PHPSonos($room->IPAddr);
+					
+					if ($room->ValidateValue($sonos, $command, $function, $value) == false) {
+						return false;
+					}
 					
 					switch ($function) {
 						case IPSSONOS_FNC_POWER:
@@ -563,10 +574,10 @@
 			return $result;
 		}				
 		private function SetQueueRadiostationByName($room, $sonos, $radiostation) {
-			
+
 			$result			= false;
 			$sonos_lists  	= $sonos->Browse("R:0/0","c");
-			$playlistid		= 0;
+			$listid		= 0;
 			
 			if ($sonos_lists <> null) {
 				foreach ($sonos_lists as $list_key => $ls_list) {
@@ -581,9 +592,9 @@
 						$result = true;
 						
 						// Update variables of room
-						$room->setvalue(IPSSONOS_CMD_AUDIO, IPSSONOS_FNC_PLAYRDNAME, $radiostation);						
+						$room->setvalue(IPSSONOS_CMD_AUDIO, IPSSONOS_FNC_PLAYRDNAME, $listid);						
 					}
-					$playlistid = $playlistid + 1;
+					$listid = $listid + 1;
 				}
 			}
 			else $this->LogErr('Fehler beim Lesen der Sonsos Radiostation: '.$radiostation);	
@@ -595,11 +606,6 @@
 			$browselist = $sonos->Browse("R:0/0","c");
 		
 			if ($browselist <> null) {
-//$sonos->SetRadio(urldecode($browselist[$radiostationid]['res'])); 	
-//$sonos = new PHPSonos($Player_IP); //Sonos ZP IPAdresse
-//$browselist = $sonos->Browse("R:0/0","c");
-//$sonos->SetRadio(urldecode($browselist[$Radio_No]['res']));
-			
 				$sonos->ClearQueue();
 				$sonos->SetRadio(urldecode($browselist[$radiostationid]['res'])); 
 				$result = true;

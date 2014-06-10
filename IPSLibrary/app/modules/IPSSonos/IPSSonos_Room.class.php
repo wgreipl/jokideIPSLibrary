@@ -155,31 +155,63 @@
 		public function ValidateValue($sonos, $command, $function, $value) {
 			$errorMsg = '';
 			$result   = false;
-			
-			if( Sys_Ping( $this->IPAddr, 200 ) == false) {
-				$this->LogErr('Aktion im Raum '.$this->roomName.' konnte nicht ausgeführt werden, da Gerät nicht erreichbar!');
-				return false;
-			}
-
-			if( $this->GetValue(IPSSONOS_CMD_ROOM, IPSSONOS_FNC_POWER) == false) {
-				$this->LogErr('Aktion im Raum '.$this->roomName.' konnte nicht ausgeführt werden, da Gerät nicht eingeschaltet ist!');
-				return false;
-			}			
-			
+	
  			switch($command) {
+		      case IPSSONOS_CMD_ROOM:
+					switch ($function) {
+						case IPSSONOS_FNC_POWER:						
+							//Switch Room
+							if ($value == false) {
+								// Check that room is on
+								if( $this->GetValue(IPSSONOS_CMD_ROOM, IPSSONOS_FNC_POWER) == false) {
+									$this->LogWrn('Raum '.$this->roomName.' konnte ausgeschaltet werden, da Gerät bereits ausgeschaltet ist!');
+									return false;
+								}
+								// Check that Sonos device is reachable					
+								if( Sys_Ping( $this->IPAddr, 200 ) == false) {
+									$this->LogErr('Raum '.$this->roomName.' konnte nicht ausgeschaltet werden, da Sonos-Gerät nicht erreichbar!');
+									return false;
+								}
+							}
+							else {
+								// Check that Sonos device is reachable					
+								if( Sys_Ping( $this->IPAddr, 200 ) == false) {
+									$this->LogErr('Aktion im Raum '.$this->roomName.' konnte nicht ausgeführt werden, da Gerät nicht erreichbar!');
+									return false;
+									}	
+								}
+							$result   = true;
+							break;							
+						default:
+							break;
+					}					
 
+					break;				 
 				case IPSSONOS_CMD_AUDIO:
-//				   $roomOk   = $roomId>=0 and $roomId<GetValue(IPS_GetObjectIDByIdent('ROOM_COUNT', $this->instanceId));
+				
+					// Check that room is on
+					if( $this->GetValue(IPSSONOS_CMD_ROOM, IPSSONOS_FNC_POWER) == false) {
+						$this->LogWrn('Aktion im Raum '.$this->roomName.' konnte nicht ausgeführt werden, da Gerät nicht eingeschaltet ist!');
+						return false;
+					}
+					// Check that Sonos device is reachable					
+					if( Sys_Ping( $this->IPAddr, 200 ) == false) {
+						$this->LogErr('Aktion im Raum '.$this->roomName.' konnte nicht ausgeführt werden, da Gerät nicht erreichbar!');
+						return false;
+					}		
 					switch($function) {
 						case IPSSONOS_FNC_VOLUME: /*0..78*/
 //							$result = $roomOk and ($value>=IPSSONOS_VAL_VOLUME_MIN and $value<=IPSSONOS_VAL_VOLUME_MAX);
 //							$errorMsg = "Value '$value' for Volume NOT in Range (use ".IPSSONOS_VAL_VOLUME_MIN." <= value <=".IPSSONOS_VAL_VOLUME_MAX.")";
+							$result   = true;
 							break;
 						case IPSSONOS_FNC_MUTE: /*0..78*/
 //							$result = $roomOk and ($value==true or $value==IPSSONOS_VAL_BOOLEAN_TRUE or $value==false or $value==IPSSONOS_VAL_BOOLEAN_FALSE);
 //							$errorMsg = "Value '$value' for Mute NOT in Range (use 0,1 or boolean)";
+							$result   = true;
 							break;
 						default:
+							$result   = true;							
 //							$errorMsg = "Unknonw function '$function' for Command '$command'";
 					}
 					break;
@@ -187,9 +219,20 @@
 //					$errorMsg = "Unknonw Command '$command'";
 			}
 			if (!$result) {
-//				$this->LogErr($errorMsg);
+				$this->LogWrn($errorMsg);
 			}
 			return true;
+		}
+		
+		/**
+		 * @private
+		 *
+		 * Protokollierung einer Warning Meldung
+		 *
+		 * @param string $msg Meldung 
+		 */
+		private function LogWrn($msg) {
+			IPSLogger_Wrn(__file__, $msg);
 		}
 		
 		/**
@@ -201,21 +244,8 @@
 		 */
 		private function LogErr($msg) {
 			IPSLogger_Err(__file__, $msg);
-			$this->Log('Err', $msg);
 		}
-			/**
-		 * @private
-		 *
-		 * Protokollierung einer Meldung im IPSSonos Log
-		 *
-		 * @param string $logType Type der Logging Meldung 
-		 * @param string $msg Meldung 
-		 */
-		private function Log ($logType, $msg) {
-			
-				IPSLogger_WriteFile("", 'IPSSonos.log', date('Y-m-d H:i:s').'  '.$logType.' - '.$msg, null);
-			
-		}	
+
 	}
 
 	/** @}*/

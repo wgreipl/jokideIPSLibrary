@@ -16,345 +16,281 @@
 	 * along with the IPSLibrary. If not, see http://www.gnu.org/licenses/gpl.txt.
 	 */    
 
-	/**@defgroup IPSSonos_api IPSSonos API
-	 * @ingroup IPSSonos
+	/**@defgroup IPSxbmc_api IPSxbmc API
+	 * @ingroup IPSxbmc
 	 * @{
 	 *
-	 * IPSSonos Server API
+	 * IPSxbmc Server API
 	 *
-	 * @file          IPSSonos.inc.php
+	 * @file          IPSxbmc.inc.php
 	 * @author        Andreas Brauneis
 	 * @version
 	 * Version 2.50.1, 31.01.2012<br/>
 	 *
 	 * Dieses File kann von anderen Scripts per INCLUDE eingebunden werden und enthält Funktionen
-	 * um alle IPSSonos Funktionen bequem per Funktionsaufruf steueren zu können.
+	 * um alle IPSxbmc Funktionen bequem per Funktionsaufruf steueren zu können.
 	 *
 	 */
 
- 	include_once 'IPSSonos_Server.class.php';
+ 	include_once 'IPSxbmc_Server.class.php';
 	
 
 	/**
 	 * Ein- und Ausschalten eines einzelnen Raumes
 	 *
-	 * @param int $instanceId ID des IPSSonos Servers
+	 * @param int $instanceId ID des IPSxbmc Servers
 	 * @param int $roomId Raum der geändert werden soll (0-3)
 	 * @param string $value TRUE oder '1' für An, FALSE oder '0' für Aus
 	 * @return boolean Funktions Ergebnis, TRUE für OK, FALSE für Fehler
 	 */
-	function IPSSonos_SetRoomPower($roomName, $value) {
-		$server = IPSSonos_GetServer();
-		return $server->SendData(IPSSONOS_CMD_ROOM, $roomName, IPSSONOS_FNC_POWER, $value);
+	function IPSxbmc_SetRoomPower($roomName, $value) {
+		$server = IPSxbmc_GetServer();
+		return $server->SendData(IPSxbmc_CMD_ROOM, $roomName, IPSxbmc_FNC_POWER, $value);
 	}
-
+	
 	/**
 	 * Status Raumverstärker lesen
 	 *
-	 * @param int $instanceId ID des IPSSonos Servers
+	 * @param int $instanceId ID des IPSxbmc Servers
 	 * @param int $roomId Raum der ausgelesen werden soll (0-3)
 	 * @return boolean Status Raumverstärker
 	 */
-	function IPSSonos_GetRoomPower($roomName) {
-		$server = IPSSonos_GetServer();
-		return $server->GetData(IPSSONOS_CMD_ROOM, $roomId, IPSSONOS_FNC_POWER, null);
+	function IPSxbmc_GetRoomPower($roomName) {
+		$server = IPSxbmc_GetServer();
+		return $server->GetData(IPSxbmc_CMD_ROOM, $roomName, IPSxbmc_FNC_POWER, null);
 	}
 	
-	function IPSSonos_Play($roomName) {
-		$server = IPSSonos_GetServer();
-		return $server->SendData(IPSSONOS_CMD_AUDIO, $roomName, IPSSONOS_FNC_PLAY, null);
+	/**
+	 * Ein- und Ausschalten eines einzelnen Raumes
+	 *
+	 * @param int $instanceId ID des IPSxbmc Servers
+	 * @param int $roomId Raum der geändert werden soll (0-3)
+	 * @param string $value TRUE oder '1' für An, FALSE oder '0' für Aus
+	 * @return boolean Funktions Ergebnis, TRUE für OK, FALSE für Fehler
+	 */
+	
+	/**
+	 * Ein- und Ausschalten eines einzelnen Raumes
+	 *
+	 * @param int $instanceId ID des IPSxbmc Servers
+	 * @param int $roomId Raum der geändert werden soll (0-3)
+	 * @param string $value TRUE oder '1' für An, FALSE oder '0' für Aus
+	 * @return boolean Funktions Ergebnis, TRUE für OK, FALSE für Fehler
+	 */
+	
+	function IPSxbmc_GetAllRooms() {
+		$server = IPSxbmc_GetServer();
+		return $server->GetData(IPSxbmc_CMD_SERVER, null, IPSxbmc_FNC_ROOMS, null);
+	}	
+
+	function IPSxbmc_GetAllActiveRooms() {
+		$server = IPSxbmc_GetServer();
+		return $server->GetData(IPSxbmc_CMD_SERVER, null, IPSxbmc_FNC_ROOMSACTIVE, null);
+	}	
+	
+	function IPSxbmc_PlayPause($roomName) {
+		$server = IPSxbmc_GetServer();
+		return $server->SendData(IPSxbmc_CMD_AUDIO, $roomName, IPSxbmc_FNC_PLAY, null);
 	}
 
-	function IPSSonos_Pause($roomName) {
-		$server = IPSSonos_GetServer();
-		return $server->SendData(IPSSONOS_CMD_AUDIO, $roomName, IPSSONOS_FNC_PAUSE, null);
+	function IPSxbmc_Pause($roomName) {
+		$server = IPSxbmc_GetServer();
+		return $server->SendData(IPSxbmc_CMD_AUDIO, $roomName, IPSxbmc_FNC_PAUSE, null);
 	}	
 	
-	function IPSSonos_Stop($roomName) {
-		$server = IPSSonos_GetServer();
-		return $server->SendData(IPSSONOS_CMD_AUDIO, $roomName, IPSSONOS_FNC_STOP, null);
+	function IPSxbmc_Stop($roomName) {
+		$server = IPSxbmc_GetServer();
+		return $server->SendData(IPSxbmc_CMD_AUDIO, $roomName, IPSxbmc_FNC_STOP, null);
 	}	
 	
-	function IPSSonos_Next($roomName) {
-		$server = IPSSonos_GetServer();
-		return $server->SendData(IPSSONOS_CMD_AUDIO, $roomName, IPSSONOS_FNC_NEXT, null);
+	function IPSxbmc_Next($roomName) {
+		$server = IPSxbmc_GetServer();
+		return $server->SendData(IPSxbmc_CMD_AUDIO, $roomName, IPSxbmc_FNC_NEXT, null);
 	}
-	function IPSSonos_Previous($roomName) {
-		$server = IPSSonos_GetServer();
-		return $server->SendData(IPSSONOS_CMD_AUDIO, $roomName, IPSSONOS_FNC_PREVIOUS, null);
+	function IPSxbmc_Previous($roomName) {
+		$server = IPSxbmc_GetServer();
+		return $server->SendData(IPSxbmc_CMD_AUDIO, $roomName, IPSxbmc_FNC_PREVIOUS, null);
 	}	
+
+	function IPSxbmc_RampToVolumeMute($roomName, $value){
+		$server = IPSxbmc_GetServer();
+		return $server->SendData(IPSxbmc_CMD_AUDIO, $roomName, IPSxbmc_FNC_VOLUME_RMPMUTE, $value);
+	}	
+	
+	function IPSxbmc_RampToVolumeMuteSlow($roomName, $value){
+		$server = IPSxbmc_GetServer();
+		return $server->SendData(IPSxbmc_CMD_AUDIO, $roomName, IPSxbmc_FNC_VOLUME_RMPMUTESLOW, $value);
+	}	
+	
+	function IPSxbmc_RampToVolume($roomName, $value){
+		$server = IPSxbmc_GetServer();
+		return $server->SendData(IPSxbmc_CMD_AUDIO, $roomName, IPSxbmc_FNC_VOLUME_RMP, $value);
+	}
+
+	function IPSxbmc_SetShuffle($roomName, $value){
+		$server = IPSxbmc_GetServer();
+		return $server->SendData(IPSxbmc_CMD_AUDIO, $roomName, IPSxbmc_FNC_SHUFFLE, $value);
+	}
+	
+	function IPSxbmc_GetShuffle($roomName){
+		$server = IPSxbmc_GetServer();
+		return $server->GetData(IPSxbmc_CMD_AUDIO, $roomName, IPSxbmc_FNC_SHUFFLE, null);
+	}
+	
+	function IPSxbmc_SetRepeat($roomName, $value){
+		$server = IPSxbmc_GetServer();
+		return $server->SendData(IPSxbmc_CMD_AUDIO, $roomName, IPSxbmc_FNC_REPEAT, $value);
+	}
+	
+	function IPSxbmc_GetRepeat($roomName){
+		$server = IPSxbmc_GetServer();
+		return $server->GetData(IPSxbmc_CMD_AUDIO, $roomName, IPSxbmc_FNC_REPEAT, null);
+	}		
 	/**
 	 * Auswahl des Eingangs, der für einen bestimmten Raum verwendet werden soll
 	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
+	 * @param int $instanceId  ID des IPSxbmc Servers
 	 * @param int $roomId Raum der geändert werden soll (0-3)
 	 * @param int $value Eingang (1-4)
 	 * @return boolean Funktions Ergebnis, TRUE für OK, FALSE für Fehler
 	 */
-	function IPSSonos_SetInputSelect($instanceId, $roomId, $value) {
-		$server = IPSSonos_GetServer($instanceId);
-		return $server->SendData(IPSSONOS_CMD_AUDIO, $roomId, IPSSONOS_FNC_INPUTSELECT, $value);
+	function IPSxbmc_SetInputSelect($instanceId, $roomId, $value) {
+		$server = IPSxbmc_GetServer($instanceId);
+		return $server->SendData(IPSxbmc_CMD_AUDIO, $roomId, IPSxbmc_FNC_INPUTSELECT, $value);
 	}
 
 	/**
 	 * Eingangswahlschalter lesen
 	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
+	 * @param int $instanceId  ID des IPSxbmc Servers
 	 * @param int $roomId Raum der ausgelesen werden soll (0-3)
 	 * @return int Eingangswahl (1-4)
 	 */
-	function IPSSonos_GetInputSelect($instanceId, $roomId) {
-		$server = IPSSonos_GetServer($instanceId);
-		return $server->GetData(IPSSONOS_CMD_AUDIO, $roomId, IPSSONOS_FNC_INPUTSELECT, null)+1;
+	function IPSxbmc_GetInputSelect($instanceId, $roomId) {
+		$server = IPSxbmc_GetServer($instanceId);
+		return $server->GetData(IPSxbmc_CMD_AUDIO, $roomId, IPSxbmc_FNC_INPUTSELECT, null)+1;
 	}
 
 	/**
 	 * Eingangsverstärkung setzen
 	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
+	 * @param int $instanceId  ID des IPSxbmc Servers
 	 * @param int $roomId Raum der geändert werden soll (0-3)
 	 * @param int $value Verstärkung (0-15)
 	 * @return boolean Funktions Ergebnis, TRUE für OK, FALSE für Fehler
 	 */
-//	function IPSSonos_SetInputGain($instanceId, $roomId, $value) {
-//		$server = IPSSonos_GetServer($instanceId);
-//		return $server->SendData(IPSSONOS_TYP_SET, IPSSONOS_CMD_AUDIO, $roomId, IPSSONOS_FNC_INPUTGAIN, $value);
+//	function IPSxbmc_SetInputGain($instanceId, $roomId, $value) {
+//		$server = IPSxbmc_GetServer($instanceId);
+//		return $server->SendData(IPSxbmc_TYP_SET, IPSxbmc_CMD_AUDIO, $roomId, IPSxbmc_FNC_INPUTGAIN, $value);
 //	}
 
 	/**
 	 * Eingangsverstärkung lesen
 	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
+	 * @param int $instanceId  ID des IPSxbmc Servers
 	 * @param int $roomId Raum der ausgelesen werden soll (0-3)
 	 * @return int Verstärkung (0-15)
 	 */
-//	function IPSSonos_GetInputGain($instanceId, $roomId) {
-//		$server = IPSSonos_GetServer($instanceId);
-//		return $server->SendData(IPSSONOS_TYP_GET, IPSSONOS_CMD_AUDIO, $roomId, IPSSONOS_FNC_INPUTGAIN, null);
+//	function IPSxbmc_GetInputGain($instanceId, $roomId) {
+//		$server = IPSxbmc_GetServer($instanceId);
+//		return $server->SendData(IPSxbmc_TYP_GET, IPSxbmc_CMD_AUDIO, $roomId, IPSxbmc_FNC_INPUTGAIN, null);
 //	}
 
 	/**
 	 * Laustärke setzen
 	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
+	 * @param int $instanceId  ID des IPSxbmc Servers
 	 * @param int $roomId Raum der geändert werden soll (0-3)
 	 * @param int $value Lautstärke (0-40)
 	 * @return boolean Funktions Ergebnis, TRUE für OK, FALSE für Fehler
 	 */
-	function IPSSonos_SetVolume($roomName, $value) {
-		$server = IPSSonos_GetServer();
-		return $server->SendData(IPSSONOS_CMD_AUDIO, $roomName, IPSSONOS_FNC_VOLUME, $value);
+	function IPSxbmc_SetVolume($roomName, $value) {
+		$server = IPSxbmc_GetServer();
+		return $server->SendData(IPSxbmc_CMD_AUDIO, $roomName, IPSxbmc_FNC_VOLUME, $value);
 	}
 	/**
 	 * Laustärke erhöhen
 	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
+	 * @param int $instanceId  ID des IPSxbmc Servers
 	 * @param int $roomId Raum der geändert werden soll (0-3)
 	 * @param int $value Lautstärke (0-40)
 	 * @return boolean Funktions Ergebnis, TRUE für OK, FALSE für Fehler
 	 */
-	function IPSSonos_IncVolume($roomName, $value) {
-		$server = IPSSonos_GetServer();
-		return $server->SendData(IPSSONOS_CMD_AUDIO, $roomName, IPSSONOS_FNC_VOLUME_INC, $value);
+	function IPSxbmc_IncVolume($roomName, $value) {
+		$server = IPSxbmc_GetServer();
+		return $server->SendData(IPSxbmc_CMD_AUDIO, $roomName, IPSxbmc_FNC_VOLUME_INC, $value);
 	}
 	/**
 	 * Laustärke verringern
 	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
+	 * @param int $instanceId  ID des IPSxbmc Servers
 	 * @param int $roomId Raum der geändert werden soll (0-3)
 	 * @param int $value Lautstärke (0-40)
 	 * @return boolean Funktions Ergebnis, TRUE für OK, FALSE für Fehler
 	 */
-	function IPSSonos_DecVolume($roomName, $value) {
-		$server = IPSSonos_GetServer();
-		return $server->SendData(IPSSONOS_CMD_AUDIO, $roomName, IPSSONOS_FNC_VOLUME_DEC, $value);
+	function IPSxbmc_DecVolume($roomName, $value) {
+		$server = IPSxbmc_GetServer();
+		return $server->SendData(IPSxbmc_CMD_AUDIO, $roomName, IPSxbmc_FNC_VOLUME_DEC, $value);
 	}
 		
 	/**
 	 * Laustärke lesen
 	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
+	 * @param int $instanceId  ID des IPSxbmc Servers
 	 * @param int $roomId Raum der ausgelesen werden soll (0-3)
 	 * @return int Lautstärke (0-40)
 	 */
-	function IPSSonos_GetVolume($instanceId, $roomId) {
-		$server = IPSSonos_GetServer($instanceId);
-		return $server->GetData(IPSSONOS_CMD_AUDIO, $roomId, IPSSONOS_FNC_VOLUME, null);
+	function IPSxbmc_GetVolume($instanceId, $roomId) {
+		$server = IPSxbmc_GetServer($instanceId);
+		return $server->GetData(IPSxbmc_CMD_AUDIO, $roomId, IPSxbmc_FNC_VOLUME, null);
 	}
 
 	/**
 	 * Muting setzen
 	 *
-	 * @param int $instanceId ID des IPSSonos Servers
+	 * @param int $instanceId ID des IPSxbmc Servers
 	 * @param int $roomId Raum der geändert werden soll (0-3)
 	 * @param string $value TRUE oder '1' für An, FALSE oder '0' für Aus
 	 * @return boolean Funktions Ergebnis, TRUE für OK, FALSE für Fehler
 	 */
-	function IPSSonos_SetMute($roomName, $value) {
-		$server = IPSSonos_GetServer();
-		return $server->SendData(IPSSONOS_CMD_AUDIO, $roomName, IPSSONOS_FNC_MUTE, $value);
+	function IPSxbmc_SetMute($roomName, $value) {
+		$server = IPSxbmc_GetServer();
+		return $server->SendData(IPSxbmc_CMD_AUDIO, $roomName, IPSxbmc_FNC_MUTE, $value);
 	}
 
 	/**
 	 * Status Muting lesen
 	 *
-	 * @param int $instanceId ID des IPSSonos Servers
+	 * @param int $instanceId ID des IPSxbmc Servers
 	 * @param int $roomId Raum der ausgelesen werden soll (0-3)
 	 * @return boolean Status Muting
 	 */
-	function IPSSonos_GetMute($instanceId, $roomId) {
-		$server = IPSSonos_GetServer($instanceId);
-		return $server->GetData(IPSSONOS_CMD_AUDIO, $roomId, IPSSONOS_FNC_MUTE, null);
+	function IPSxbmc_GetMute($roomName) {
+		$server = IPSxbmc_GetServer($instanceId);
+		return $server->GetData(IPSxbmc_CMD_AUDIO, $roomId, IPSxbmc_FNC_MUTE, null);
 	}
-
+	
 	/**
-	 * Balance setzen
+	 * Switch Mute
 	 *
-	 * @param int $instanceId ID des IPSSonos Servers
-	 * @param int $roomId Raum der geändert werden soll (0-3)
-	 * @param int $value Wert Balance (0-15)
-	 * @return boolean Funktions Ergebnis, TRUE für OK, FALSE für Fehler
-	 */
-//	function IPSSonos_SetBalance($instanceId, $roomId, $value) {
-//		$server = IPSSonos_GetServer($instanceId);
-//		return $server->SendData(IPSSONOS_TYP_SET, IPSSONOS_CMD_AUDIO, $roomId, IPSSONOS_FNC_BALANCE, $value);
-//	}
-
-	/**
-	 * Balance lesen
-	 *
-	 * @param int $instanceId ID des IPSSonos Servers
+	 * @param int $instanceId ID des IPSxbmc Servers
 	 * @param int $roomId Raum der ausgelesen werden soll (0-3)
-	 * @return int Wert Balance (0-15)
+	 * @return boolean Status Muting
 	 */
-//	function IPSSonos_GetBalance($instanceId, $roomId) {
-//		$server = IPSSonos_GetServer($instanceId);
-//		return $server->SendData(IPSSONOS_TYP_GET, IPSSONOS_CMD_AUDIO, $roomId, IPSSONOS_FNC_BALANCE, null);
-//	}
-
-	/**
-	 * Einstellung Höhen
-	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
-	 * @param int $roomId Raum der geändert werden soll (0-3)
-	 * @param int $value Wert Höhen (0-15)
-	 * @return boolean Funktions Ergebnis, TRUE für OK, FALSE für Fehler
-	 */
-//	function IPSSonos_SetTreble($instanceId, $roomId, $value) {
-//		$server = IPSSonos_GetServer($instanceId);
-//		return $server->SendData(IPSSONOS_TYP_SET, IPSSONOS_CMD_AUDIO, $roomId, IPSSONOS_FNC_TREBLE, $value);
-//	}
-
-	/**
-	 * Einstellung Höhen lesen
-	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
-	 * @param int $roomId Raum der ausgelesen werden soll (0-3)
-	 * @return int Wert Höhen (0-15)
-	 */
-//	function IPSSonos_GetTreble($instanceId, $roomId) {
-//		$server = IPSSonos_GetServer($instanceId);
-//		return $server->SendData(IPSSONOS_TYP_GET, IPSSONOS_CMD_AUDIO, $roomId, IPSSONOS_FNC_TREBLE, null);
-//	}
-
-	/**
-	 * Einstellung Mitten
-	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
-	 * @param int $roomId Raum der geändert werden soll (0-3)
-	 * @param int $value Wert Mitten (0-15)
-	 * @return boolean Funktions Ergebnis, TRUE für OK, FALSE für Fehler
-	 */
-//	function IPSSonos_SetMiddle($instanceId, $roomId, $value) {
-//		$server = IPSSonos_GetServer($instanceId);
-//		return $server->SendData(IPSSONOS_TYP_SET, IPSSONOS_CMD_AUDIO, $roomId, IPSSONOS_FNC_MIDDLE, $value);
-//	}
-
-	/**
-	 * Einstellung Mitten lesen
-	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
-	 * @param int $roomId Raum der ausgelesen werden soll (0-3)
-	 * @return int Wert Mitten (0-15)
-	 */
-//	function IPSSonos_GetMiddle($instanceId, $roomId) {
-//		$server = IPSSonos_GetServer($instanceId);
-//		return $server->SendData(IPSSONOS_TYP_GET, IPSSONOS_CMD_AUDIO, $roomId, IPSSONOS_FNC_MIDDLE, null);
-//	}
-
-	/**
-	 * Einstellung Bass setzen
-	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
-	 * @param int $roomId Raum der geändert werden soll (0-3)
-	 * @param int $value Wert Bass (0-15)
-	 * @return boolean Funktions Ergebnis, TRUE für OK, FALSE für Fehler
-	 */
-//	function IPSSonos_SetBass($instanceId, $roomId, $value) {
-//		$server = IPSSonos_GetServer($instanceId);
-//		return $server->SendData(IPSSONOS_TYP_SET, IPSSONOS_CMD_AUDIO, $roomId, IPSSONOS_FNC_BASS, $value);
-//	}
-
-	/**
-	 * Einstellung Bass lesen
-	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
-	 * @param int $roomId Raum der ausgelesen werden soll (0-3)
-	 * @return int Wert Bass (0-15)
-	 */
-//	function IPSSonos_GetBass($instanceId, $roomId) {
-//		$server = IPSSonos_GetServer($instanceId);
-//		return $server->SendData(IPSSONOS_TYP_GET, IPSSONOS_CMD_AUDIO, $roomId, IPSSONOS_FNC_BASS, null);
-//	}
-
-	/**
-	 * Set Mode
-	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
-	 * @param int $mode Mode (0-4)
-	 * @param int $value Wert (0 oder 1)
-	 * @return boolean Funktions Ergebnis, TRUE für OK, FALSE für Fehler
-	 */
-//	function IPSSonos_SetMode($instanceId, $mode, $value) {
-//		$server = IPSSonos_GetServer($instanceId);
-//		return $server->SendData(IPSSONOS_TYP_SET, IPSSONOS_CMD_MODE, null, $mode, $value);
-//	}
-
-	/**
-	 * Get Mode
-	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
-	 * @param int $mode Mode (0-4)
-	 * @return integer Mode Value (0 oder 1)
-	 */
-//	function IPSSonos_GetMode($instanceId, $mode) {
-//		$server = IPSSonos_GetServer($instanceId);
-//		return $server->SendData(IPSSONOS_TYP_SET, IPSSONOS_CMD_MODE, null, $mode, null);
-//	}
-
-	/**
-	 * Set Text
-	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
-	 * @param string $text1 Text Zeile 1
-	 * @param string $text2 Text Zeile 2
-	 * @param string $text3 Text Zeile 3
-	 * @return boolean Funktions Ergebnis, TRUE für OK, FALSE für Fehler
-	 */
-//	function IPSSonos_SetText($instanceId, $text1, $text2=null, $text3=null) {
-//		$server = IPSSonos_GetServer($instanceId);
-//		return $server->SendData(IPSSONOS_TYP_SET, IPSSONOS_CMD_TEXT, null, null, $text1.IPSSONOS_COM_SEPARATOR.$text2.IPSSONOS_COM_SEPARATOR.$text3);
-//	}
-
+	function IPSxbmc_SwitchMute($roomName) {
+		$server = IPSxbmc_GetServer($instanceId);
+		return $server->GetData(IPSxbmc_CMD_AUDIO, $roomId, IPSxbmc_FNC_MUTE, null);
+	}
+	
 	/**
 	 * Get Server
 	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
-	 * @return IPSSonos IPSSonos Server Object
+	 * @param int $instanceId  ID des IPSxbmc Servers
+	 * @return IPSxbmc IPSxbmc Server Object
 	 */
-	function IPSSonos_GetServer() {
-	   	$instanceId = IPSUtil_ObjectIDByPath('Program.IPSLibrary.data.modules.IPSSonos.IPSSonos_Server');
-		return new IPSSonos_Server($instanceId);
+	function IPSxbmc_GetServer() {
+	   	$instanceId = IPSUtil_ObjectIDByPath('Program.IPSLibrary.data.modules.IPSxbmc.IPSxbmc_Server');
+		return new IPSxbmc_Server($instanceId);
 	}
 
 
