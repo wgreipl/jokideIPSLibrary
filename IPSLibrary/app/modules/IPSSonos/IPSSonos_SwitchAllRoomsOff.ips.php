@@ -30,7 +30,7 @@
 	 */
 	include_once "IPSSonos.inc.php";
 
-	IPSSonos_SyncPlaylists();
+	IPSSonos_SwitchAllRoomsOff();
 
 	/** @}*/
 ?>

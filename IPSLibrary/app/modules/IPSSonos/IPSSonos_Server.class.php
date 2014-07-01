@@ -16,14 +16,14 @@
 	 * along with the IPSLibrary. If not, see http://www.gnu.org/licenses/gpl.txt.
 	 */    
 
-	/**@defgroup IPSSonos IPSSonos Multiroom Steuerung
-	 * @ingroup hardware
+	/**@defgroup IPSSonos IPSSonos Steuerung
+	 * @ingroup modules
 	 * @{
 	 *
 	 * Klasse zur Kommunikation mit dem IPSSonos Device 
 	 *
 	 * @file          IPSSonos_Server.class.php
-	 * @author        Andreas Brauneis
+	 * @author        joki
 	 *
 	 */
 
@@ -40,9 +40,9 @@
     *
     * Definiert ein IPSSonos_Server Objekt
     *
-    * @author Andreas Brauneis
+    * @author joki
     * @version
-    * Version 2.50.1, 31.01.2012<br/>
+    * Version 0.9.4, 12.06.2014<br/>
     */
 	class IPSSonos_Server {
 
@@ -74,7 +74,6 @@
 		public function __construct($instanceId) {
 			$this->instanceId   = $instanceId;
 			$this->IPAddr		= GetValue(IPS_GetObjectIDByIdent(IPSSONOS_VAR_IPADDR, $this->instanceId));
-			$this->debugEnabled = GetValue(IPS_GetObjectIDByIdent(IPSSONOS_VAR_MODESERVERDEBUG, $this->instanceId));
 			$this->retryCount  = 0;
 		}
 
@@ -102,8 +101,6 @@
 		private function LogErr($msg) {
 			IPSLogger_Err(__file__, $msg);
 			$this->Log('Err', $msg);
-//			$variableId  = IPS_GetObjectIDByIdent(IPSSONOS_VAR_LASTERROR, $this->instanceId);
-//			SetValue($variableId, $msg);
 		}
 		
 		/**
@@ -153,10 +150,7 @@
 			IPSLogger_Trc(__file__, $msg);
 			$this->Log('Trc', $msg);
 		}
-		
-
-	
-		
+			
 		/**
 		 * @private
 		 *
@@ -166,7 +160,7 @@
 		 * @param integer $roomId Nummer des Raumes (1-4).
 		 * @return IPSSonos_Room IPSSonos Room Object
 		 */
-		private function GetRoom($roomName) {
+		public function GetRoom($roomName) {
 			$roomIds = GetValue(IPS_GetObjectIDByIdent(IPSSONOS_VAR_ROOMIDS, $this->instanceId));
 			if ($roomIds=="") {
 				return false;
@@ -189,28 +183,6 @@
 				$this->LogErr('Raum '.$roomName.' nicht in der Konfiguration gefunden!');
 			}
 			return $result;
-		}
-
-		/**
-		 * @private
-		 *
-		 * Liefert ein IPSSonosRoom Objekt für eine Raum Nummer, sind keine Räume vorhanden
-		 * liefert die Funktion false.
-		 *
-		 * @param integer $roomId Nummer des Raumes (1-4).
-		 * @return IPSSonos_Room IPSSonos Room Object
-		 */
-		private function GetAllRooms() {
-			$roomIds = GetValue(IPS_GetObjectIDByIdent(IPSSONOS_VAR_ROOMIDS, $this->instanceId));
-			if ($roomIds=="") {
-				return false;
-			}
-			$roomIds        = explode(',',  $roomIds);
-			foreach ($roomIds as $roomId){
-				$room_array[] = IPS_GetName((int)$roomId);
-			}
-
-			return $room_array;
 		}
 
 		/**
@@ -243,17 +215,31 @@
 					
 					switch ($function) {
 						case IPSSONOS_FNC_ROOMS:
-							$result = $this->GetAllRooms();
+							$roomIds = GetValue(IPS_GetObjectIDByIdent(IPSSONOS_VAR_ROOMIDS, $this->instanceId));
+							if ($roomIds=="") {
+								return false;
+							}
+							$roomIds        = explode(',',  $roomIds);
+							foreach ($roomIds as $roomId){
+								$room_array[] = IPS_GetName((int)$roomId);
+							}
+
+							return $room_array;
 							break;	
 						case IPSSONOS_FNC_ROOMSACTIVE:
-							$result = $this->GetActiveRooms();
+							$allRooms = IPSSonos_GetAllRooms();
+							foreach ($allRooms as $roomName){
+								$room = $this->GetRoom($roomName);
+								if ($room->GetValue (IPSSONOS_CMD_ROOM, '')) {
+								$room_array[] = $roomName;
+								}
+							}							
+							return $room_array;
 							break;									
 						default:
 							break;
-					}						
+					}							
 					break;					
-				default:
-					break;	
 				default:
 					$this->LogErr('Unknown Command '.$command);
 			}
@@ -480,12 +466,26 @@
 					switch ($function) {
 						case IPSSONOS_FNC_POWER:
 							
-							//Switch Room
+							//Raum ausschalten
 							if ($value == false) {
 								$result = IPSSonos_Stop($roomName);
 							}
-							//
+							// Raum schalten
 							if( IPSSonos_Custom_SetRoomPower($roomName, $value) == true) {
+								
+								//Switch profile of variable to show OnDelay and arm timer when switched on
+								if( $value == true) {
+									$variableId  = IPS_GetObjectIDByIdent(IPSSONOS_VAR_ROOMPOWER, $room->instanceId);
+									IPS_SetVariableCustomProfile($variableId , "IPSSonos_PowerOnDelay");
+									
+									//Arm timer
+									IPSUtils_Include ('IPSModuleManager.class.php', 'IPSLibrary::install::IPSModuleManager');
+									$moduleManager 		= new IPSModuleManager('IPSSonos');	
+									$CategoryIdApp      = $moduleManager->GetModuleCategoryID('app');
+									$id_ScriptSettings  = IPS_GetScriptIDByName('IPSSonos_ChangeSettings', 		$CategoryIdApp);
+									$TimerId = IPS_GetEventIDByName(IPSSONOS_EVT_POWERONDELAY, $id_ScriptSettings);
+									IPS_SetEventActive($TimerId, true);
+								}
 								$this->LogInf('Power im Raum '.$roomName.' gesetzt auf: '.$value.'!');
 								$result = true;
 							}
@@ -511,17 +511,26 @@
 							break;
 						case IPSSONOS_FNC_SYNCRD:
 							$result = $this -> Sync_Radiostations();
+							break;
+						case IPSSONOS_FNC_ALLROOMSOFF: 
+							$activeRooms = IPSSonos_GetAllActiveRooms();
+							foreach ($activeRooms as $roomName) {
+								IPSSonos_SetRoomPower($roomName, false);
+							}
+							break;						
+						case IPSSONOS_FNC_SETQUERY:
+							$result = $this -> QuerySwitch($value);
 							break;								
+						case IPSSONOS_FNC_SETQUERYTIME:
+							$result = $this -> QuerySetTime($value);
+							break;									
 						default:
 							break;
 					}						
 					break;					
 				default:
 					break;
-			}	
-			
-
-			
+			}			
 			return $result;
 		}
 		
@@ -585,12 +594,10 @@
 					$List_File 		= urldecode($ls_list['res']);
 					$List_Title 	= $ls_list['title'];
 					
-					if ($List_Title === $radiostation) {
-					
+					if ($List_Title === $radiostation) {					
 						$sonos->ClearQueue();
 						$sonos->SetRadio(urldecode($List_File));
 						$result = true;
-						
 						// Update variables of room
 						$room->setvalue(IPSSONOS_CMD_AUDIO, IPSSONOS_FNC_PLAYRDNAME, $listid);						
 					}
@@ -616,14 +623,13 @@
 			else $this->LogErr('Fehler beim Lesen der Sonsos RadiostationID: '.$radiostationid);		
 			return $result;
 		}
+
 		/**
-		 * @public
-		 *
-		 * Liefert ein IPSSonosRoom Objekt für eine Raum Nummer, sind keine Räume vorhanden
-		 * liefert die Funktion false.
-		 *
-		 * @param integer $roomId Nummer des Raumes (1-4).
-		 * @return IPSSonos_Room IPSSonos Room Object
+		 *  @brief Brief
+		 *  
+		 *  @return Return_Description
+		 *  
+		 *  @details Details
 		 */
 		private function Sync_Playlists() {
 		
@@ -652,10 +658,9 @@
 			else {
 				$this->LogErr('Fehler beim Synchronisieren der Sonsos Playlists!');	
 				return false;
-			}
-				
-
-		}		
+			}			
+		}
+		
 		/**
 		 * @public
 		 *
@@ -692,10 +697,44 @@
 				$this->LogErr('Fehler beim Synchronisieren der Sonsos Radiostations!');	
 				return false;
 			}
-				
-
-		}				
-}
+		}	
+		
+		private function QuerySwitch($value) {		
+			$variableId  = IPS_GetObjectIDByIdent(IPSSONOS_VAR_QUERY, $this->instanceId);
+			if (GetValue($variableId)<>$value) {
+				SetValue($variableId, $value);
+				IPSUtils_Include ('IPSModuleManager.class.php', 'IPSLibrary::install::IPSModuleManager');
+				$moduleManager 		= new IPSModuleManager('IPSSonos');	
+				$CategoryIdApp      = $moduleManager->GetModuleCategoryID('app');
+				$id_ScriptSettings  = IPS_GetScriptIDByName('IPSSonos_ChangeSettings', 		$CategoryIdApp);
+				$TimerId = IPS_GetEventIDByName(IPSSONOS_EVT_QUERY, $id_ScriptSettings);
+				IPS_SetEventActive($TimerId, $value);
+				$this->LogInf('Abfrage der Sonos-Geräte gesetzt auf: '.WriteBoolean($value));
+			}
+		}
+	
+		private function QuerySetTime($value) {	
+			$result = false;
+			$variableId  = IPS_GetObjectIDByIdent(IPSSONOS_VAR_QUERYTIME, $this->instanceId);
+			$Profile=IPS_GetVariableProfile('IPSSonos_Query');
+			$duration = (int) $Profile['Associations'][$value]['Name'];
+			if (GetValue($variableId)<>$value) {
+				SetValue($variableId, $value);
+				IPSUtils_Include ('IPSModuleManager.class.php', 'IPSLibrary::install::IPSModuleManager');
+				$moduleManager 		= new IPSModuleManager('IPSSonos');	
+				$CategoryIdApp      = $moduleManager->GetModuleCategoryID('app');
+				$id_ScriptSettings  = IPS_GetScriptIDByName('IPSSonos_ChangeSettings', 		$CategoryIdApp);
+				$TimerId = IPS_GetEventIDByName(IPSSONOS_EVT_QUERY, $id_ScriptSettings);
+				if (IPS_SetEventCyclic($TimerId, 2 /*Daily*/, 1 /*Int*/,0 /*Days*/,0/*DayInt*/,1/*TimeType Sec*/,$duration/*Sec*/)) {
+					$this->LogInf('Abstand zwischen den Abfragen der Sonos-Geräte gesetzt auf: '.$duration);
+					$result = true;
+				}
+				if (!$result) $this->LogErr('Fehler beim setzen des zuklischen Events für Query');
+			}
+			return $result;	
+		}	
+	}
+	
 
 	/** @}*/
 ?>

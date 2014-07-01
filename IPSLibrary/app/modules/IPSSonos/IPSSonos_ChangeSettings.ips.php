@@ -20,11 +20,10 @@
 	 * @{
 	 *
 	 * @file          IPSSonosChangeSettings.ips.php
-	 * @author        Jörg Kling
+	 * @author        joki
 	 *
 	 * @version
-	 * Version 2.50.1, 31.01.2012<br/>
-	 * AudioMax Action Script
+	 * Version 0.9.4, 12.06.2014
 	 *
 	 * Dieses Script ist als Action Script für diverse IPSSonos Variablen hinterlegt, um
 	 * eine Änderung über das WebFront zu ermöglichen.
@@ -32,68 +31,93 @@
 	 */
 
  	include_once 'IPSSonos.inc.php';
-
-	$variableId    = $_IPS['VARIABLE'];
-	$variableValue = $_IPS['VALUE'];
-	$variableIdent = IPS_GetIdent($variableId);
-
-	$serverId = IPSUtil_ObjectIDByPath('Program.IPSLibrary.data.modules.IPSSonos.IPSSonos_Server');
-	$instanceId = IPS_GetParent($variableId);
+	IPSUtils_Include ("IPSSonos_Query.inc.php",      	"IPSLibrary::app::modules::IPSSonos");
+	IPSUtils_Include ("IPSSonos_Constants.inc.php",     "IPSLibrary::app::modules::IPSSonos");
 	
-	if ($serverId<>$instanceId) {
-		$roomName = IPS_GetIdent($instanceId);
-	}
+	if ($_IPS['SENDER'] == 'WebFront') {
 	
+		$variableId    = $_IPS['VARIABLE'];
+		$variableValue = $_IPS['VALUE'];
+		$variableIdent = IPS_GetIdent($variableId);
 
-	switch($variableIdent) {
-
-
-		case IPSSONOS_VAR_ROOMPOWER:
-			IPSSonos_SetRoomPower($roomName, $variableValue);			
-			break;
-		case IPSSONOS_VAR_VOLUME:
-			IPSSonos_SetVolume($roomName, $variableValue);
-			break;
-		case IPSSONOS_VAR_MUTE:
-			IPSSonos_SetMute($roomName, $variableValue);
-			break;
-		case IPSSONOS_VAR_TRANSPORT:
+		$serverId = IPSUtil_ObjectIDByPath('Program.IPSLibrary.data.modules.IPSSonos.IPSSonos_Server');
+		$instanceId = IPS_GetParent($variableId);
 		
-			switch($variableValue) {
-				case IPSSONOS_TRA_PREVIOUS:
-					IPSSonos_PREVIOUS($roomName);				
-					break;			
-				case IPSSONOS_TRA_PLAY:
-					IPSSonos_Play($roomName);				
-					break;
-				case IPSSONOS_TRA_PAUSE:
-					IPSSonos_Pause($roomName);
-					break;
-				case IPSSONOS_TRA_STOP:
-					IPSSonos_Stop($roomName);						
-					break;
-				case IPSSONOS_TRA_NEXT:
-					IPSSonos_NEXT($roomName);				
-					break;					
-				default:
-					break;
-			}
-			break;
-		case IPSSONOS_VAR_PLAYLIST:
-			IPSSonos_PlayPlaylistByID($roomName, $variableValue);
-			break;
-		case IPSSONOS_VAR_RADIOSTATION:
-			IPSSonos_PlayRadiostationByID($roomName, $variableValue);
-			break;			
-		case IPSSONOS_VAR_SHUFFLE:
-			IPSSonos_SetShuffle($roomName, $variableValue);
-			break;
-		case IPSSONOS_VAR_REPEAT:
-			IPSSonos_SetRepeat($roomName, $variableValue);
-			break;			
-		default:
-			break;
-	}
+		if ($serverId<>$instanceId) {
+			$roomName = IPS_GetIdent($instanceId);
+		}
+		
+		switch($variableIdent) {
+
+			case IPSSONOS_VAR_ROOMPOWER:
+				IPSSonos_SetRoomPower($roomName, $variableValue);			
+				break;
+			case IPSSONOS_VAR_VOLUME:
+				IPSSonos_SetVolume($roomName, $variableValue);
+				break;
+			case IPSSONOS_VAR_MUTE:
+				IPSSonos_SetMute($roomName, $variableValue);
+				break;
+			case IPSSONOS_VAR_TRANSPORT:
+			
+				switch($variableValue) {
+					case IPSSONOS_TRA_PREVIOUS:
+						IPSSonos_PREVIOUS($roomName);				
+						break;			
+					case IPSSONOS_TRA_PLAY:
+						IPSSonos_Play($roomName);				
+						break;
+					case IPSSONOS_TRA_PAUSE:
+						IPSSonos_Pause($roomName);
+						break;
+					case IPSSONOS_TRA_STOP:
+						IPSSonos_Stop($roomName);						
+						break;
+					case IPSSONOS_TRA_NEXT:
+						IPSSonos_NEXT($roomName);				
+						break;					
+					default:
+						break;
+				}
+				break;
+			case IPSSONOS_VAR_PLAYLIST:
+				IPSSonos_PlayPlaylistByID($roomName, $variableValue);
+				break;
+			case IPSSONOS_VAR_RADIOSTATION:
+				IPSSonos_PlayRadiostationByID($roomName, $variableValue);
+				break;			
+			case IPSSONOS_VAR_SHUFFLE:
+				IPSSonos_SetShuffle($roomName, $variableValue);
+				break;
+			case IPSSONOS_VAR_REPEAT:
+				IPSSonos_SetRepeat($roomName, $variableValue);
+				break;
+			case IPSSONOS_VAR_QUERY:
+				IPSSonos_SetQuery($variableValue);
+				break;	
+			case IPSSONOS_VAR_QUERYTIME:
+				IPSSonos_SetQueryTime($variableValue);
+				break;					
+			default:
+				break;
+		}
+	} elseif ($_IPS['SENDER'] == 'TimerEvent') {
+
+		$event = IPS_GetName($_IPS['EVENT']);
+		
+		switch($event) {
+			case IPSSONOS_EVT_POWERONDELAY:
+				IPSSonos_QuerySonos(IPSSONOS_EVT_POWERONDELAY);		//function is in an own inlcude to reduce overhead due to class concept				
+				break;			
+			case IPSSONOS_EVT_QUERY:
+				IPSSonos_QuerySonos(IPSSONOS_EVT_QUERY);		//function is in an own inlcude to reduce overhead due to class concept		
+				break;				
+			default:
+				break;
+		}
+	
+	}		
+	
 	;
 	/** @}*/
 ?>

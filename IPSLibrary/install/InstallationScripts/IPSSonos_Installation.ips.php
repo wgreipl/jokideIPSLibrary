@@ -30,11 +30,11 @@
 	 * IPSSonos Installations File
 	 *
 	 * @file          IPSSonos_Installation.ips.php
-	 * @author        Andreas Brauneis
+	 * @author        joki
 	 * @version
-	 *  Version 2.50.1, 18.02.2012<br/>
+	 *  Version 0.9.4, 12.06.2014<br/>
 	 *
-	 * Script zur kompletten Installation der IPSSonos Entertainment Steuerung.
+	 * Script zur kompletten Installation der IPSSonos Steuerung.
 	 *
 	 * Vor der Installation sollte noch das File IPSSonos_Configuration.inc.php an die persönlichen
 	 * Bedürfnisse angepasst werden.
@@ -88,89 +88,76 @@
 	$Mobile_Order         = $moduleManager->GetConfigValueInt('Order', 'Mobile');
 	$Mobile_Icon          = $moduleManager->GetConfigValue('Icon', 'Mobile');
 
-//	$IPSSonosRoomInstallation     = $moduleManager->GetConfigValueBool('IPSSonosRoomInstallation');
 
 	/* ---------------------------------------------------------------------- */
 	/* IPSSonos Installation                                                  */
 	/* ---------------------------------------------------------------------- */
-	
-	//Delete previous installation
-	DeleteCategory($moduleManager->GetModuleCategoryID('data'));
-	
 	$CategoryIdData     = $moduleManager->GetModuleCategoryID('data');
 	$CategoryIdApp      = $moduleManager->GetModuleCategoryID('app');
-//	$CategoryIdHardware = CreateCategoryPath('Modules.IPSSonos');
+
 
  	$id_ScriptSyncPlaylists    	= IPS_GetScriptIDByName('IPSSonos_SyncPlaylists',  		$CategoryIdApp);
  	$id_ScriptSyncRadiostations	= IPS_GetScriptIDByName('IPSSonos_SyncRadiostations',  	$CategoryIdApp);	
 	$id_ScriptSettings       	= IPS_GetScriptIDByName('IPSSonos_ChangeSettings', 		$CategoryIdApp);
-
+	$id_ScriptSwitchAllOff      = IPS_GetScriptIDByName('IPSSonos_SwitchAllRoomsOff', 	$CategoryIdApp);
 
 	CreateProfile_Count 		('IPSSonos_Volume',       		0,       1, 100,       "", "%");
 	CreateProfile_Switch 		('IPSSonos_Mute',            	'Aus', 'An', "", -1, 0x00ff00);
-	CreateProfile_Switch 		('IPSSonos_Connection',      	'Deaktiviert', 'Aktiv', "", 0xaa0000, 0x0000ff, 'LockOpen', 'LockClosed');
-	CreateProfile_Associations 	('IPSSonos_Transport',       	array("|<", "Play", "Pause", "Stop","|>"));
-	CreateProfile_Associations 	('IPSSonos_Playlists',       	array("Playlists wurden noch nicht synchronisiert!"));
-	CreateProfile_Associations 	('IPSSonos_Radiostations',      array("Radiostationen wurden noch nicht synchronisiert!"));	
+	CreateProfile_Associations 	('IPSSonos_Transport',       	array("|<", "Play", "Pause", "Stop",">|"));
+	CreateProfile_Associations 	('IPSSonos_Playlists',       	array("Bitte Playlists auf Tab Config synchronisieren!"));
+	CreateProfile_Associations 	('IPSSonos_Radiostations',      array("Bitte Radiostationen auf Tab Config synchronisieren!"));	
 	CreateProfile_Switch 		('IPSSonos_Shuffle',            'Aus', 'An', "", -1, 0x00ff00);
 	CreateProfile_Switch 		('IPSSonos_Repeat',            	'Aus', 'An', "", -1, 0x00ff00);
+	CreateProfile_Associations 	('IPSSonos_Query',       		array("1", "3", "5", "10", "20", "30", "60", "180", "300"));
+	CreateProfile_Switch 		('IPSSonos_Power',            	'Aus', 'An', "", -1, 0x00ff00);
+	CreateProfile_Switch 		('IPSSonos_PowerOnDelay',       'Aus', 'An', "", -1, 0xff9900);
+
 	
 	$id_IPSSonosServerId = CreateDummyInstance("IPSSonos_Server", $CategoryIdData, 10);
-	$id_RoomIds          = CreateVariable(IPSSONOS_VAR_ROOMIDS,         3 /*String*/,  $id_IPSSonosServerId, 310, '',                      null,              '',    '');
-	$id_RoomCount        = CreateVariable(IPSSONOS_VAR_ROOMCOUNT,       1 /*Integer*/, $id_IPSSonosServerId, 320, '',                      null,              0,     '');
-	$id_IPAddr        	 = CreateVariable(IPSSONOS_VAR_IPADDR,       	3 /*String*/,  $id_IPSSonosServerId, 400, '',               	   null,              '',    '');
-	$id_ModeServerDebug  = CreateVariable(IPSSONOS_VAR_MODESERVERDEBUG, 0 /*Boolean*/, $id_IPSSonosServerId, 500, '~Switch',               null,			false,  	'');
+	$id_RoomIds          = CreateVariable(IPSSONOS_VAR_ROOMIDS,         3 /*String*/,  $id_IPSSonosServerId, 10, '',    				null,              		'',		'');
+	$id_RoomCount        = CreateVariable(IPSSONOS_VAR_ROOMCOUNT,       1 /*Integer*/, $id_IPSSonosServerId, 20, '',    				null,              		0,		'');
+	$id_IPAddr        	 = CreateVariable(IPSSONOS_VAR_IPADDR,       	3 /*String*/,  $id_IPSSonosServerId, 30, '',					null,              		'',		'');
+	$id_Query        	 = CreateVariable(IPSSONOS_VAR_QUERY,       	0 /*Boolean*/, $id_IPSSonosServerId, 40, '~Switch',				$id_ScriptSettings,		false,	'');
+	$id_QueryTime      	 = CreateVariable(IPSSONOS_VAR_QUERYTIME,      	1 /*Integer*/, $id_IPSSonosServerId, 50, 'IPSSonos_Query',		$id_ScriptSettings,		1,		'');
 
+	
+	// Create Timer for Query Sonos
+	$id_EventQuery		 	= CreateTimer_CyclicBySeconds (IPSSONOS_EVT_QUERY, $id_ScriptSettings, 1, $Active=false);
+	$id_EventPowerOnDelay	= CreateTimer_CyclicBySeconds (IPSSONOS_EVT_POWERONDELAY, $id_ScriptSettings, 5, $Active=false);
+	
 	//Populate values from config
 	$ServerConfig = IPSSonos_GetServerConfiguration();
-	SetValue($id_IPAddr, $ServerConfig[0]);
-	SetValue($id_ModeServerDebug, $ServerConfig[1]);
+	SetValue($id_IPAddr, $ServerConfig[IPSSONOS_VAR_IPADDR]);
 	
 	// ===================================================================================================
 	// Add Rooms
 	// ===================================================================================================
 
-		$RoomId=0;
-		$RoomConfig = IPSSonos_GetRoomConfiguration();
+	$RoomId=0;
+	$RoomConfig = IPSSonos_GetRoomConfiguration();
 
-		foreach ($RoomConfig as $GroupName=>$GroupData) {
-			$RoomId = $RoomId + 1;
-			$RoomInstanceId = CreateDummyInstance($GroupName, $CategoryIdData, 100+$RoomId);
-			$RoomIds[]      = $RoomInstanceId;
+	foreach ($RoomConfig as $GroupName=>$GroupData) {
+		$RoomId = $RoomId + 1;
+		$RoomInstanceId = CreateDummyInstance($GroupName, $CategoryIdData, 100+$RoomId);
+		$RoomIds[]      = $RoomInstanceId;
 
-			$PowerId        	= CreateVariable(IPSSONOS_VAR_ROOMPOWER,	0 /*Boolean*/, $RoomInstanceId,  10, '~Switch',              	$id_ScriptSettings, IPSSONOS_VAL_POWER_DEFAULT, 'Power');
-			$VolumeId      		= CreateVariable(IPSSONOS_VAR_VOLUME,		1 /*Integer*/, $RoomInstanceId,  40, 'IPSSonos_Volume',      	$id_ScriptSettings, IPSSONOS_VAL_VOLUME_DEFAULT, 'Intensity');
-			$MutingId       	= CreateVariable(IPSSONOS_VAR_MUTE,			0 /*Boolean*/, $RoomInstanceId,  50, 'IPSSonos_Mute',        	$id_ScriptSettings, IPSSONOS_VAL_MUTE_DEFAULT, 'Speaker');
-			$TransportId    	= CreateVariable(IPSSONOS_VAR_TRANSPORT,	1 /*Integer*/, $RoomInstanceId,  60, 'IPSSonos_Transport',   	$id_ScriptSettings, IPSSONOS_VAL_TRANSPORT, 'Speaker');
-			$IPAdrr         	= CreateVariable(IPSSONOS_VAR_IPADDR,		3 /*String*/,  $RoomInstanceId,  100, '', 						null, 				'', '');
-			$RINCON         	= CreateVariable(IPSSONOS_VAR_RINCON,		3 /*String*/,  $RoomInstanceId,  110, '', 						null, 				'', '');
-			$PLAYLIST         	= CreateVariable(IPSSONOS_VAR_PLAYLIST,    	1 /*Integer*/, $RoomInstanceId,  120, 'IPSSonos_Playlists', 	$id_ScriptSettings, IPSSONOS_VAL_PLAYLIST, '');
-			$RADIOSTATION       = CreateVariable(IPSSONOS_VAR_RADIOSTATION,	1 /*Integer*/, $RoomInstanceId,  130, 'IPSSonos_Radiostations',	$id_ScriptSettings, IPSSONOS_VAL_RADIOSTATION, '');
-			$ShuffleId       	= CreateVariable(IPSSONOS_VAR_SHUFFLE,		0 /*Boolean*/, $RoomInstanceId,  140, 'IPSSonos_Shuffle',    	$id_ScriptSettings, false, '');
-			$RepeatId       	= CreateVariable(IPSSONOS_VAR_REPEAT,		0 /*Boolean*/, $RoomInstanceId,  150, 'IPSSonos_Repeat',     	$id_ScriptSettings, false, '');
-
-			//         $remoteControlId  = CreateVariable(IPSSONOS_VAR_REMOTE,   	 3 /*String*/,  $RoomInstanceId,  310 , '~HTMLBox', null, '<iframe frameborder="0" width="100%" src="../user/IPSSonosPlayer/IPSSonosPlayer_MP3Control.php" height=255px </iframe>');
-
-// Ab hier von Netplayer
-//	$sourceId              = CreateVariable("Source",          1 /*Integer*/,  $CategoryIdData, 110 , 'NetPlayer_Source', $actionScriptId, 0 /*CD*/);
-//	$controlId             = CreateVariable("Control",         1 /*Integer*/,  $CategoryIdData, 120 , 'NetPlayer_Control', $actionScriptId, 2 /*Stop*/);
-//	$albumId               = CreateVariable("Album",           3 /*String*/,   $CategoryIdData, 130, '~String');
-//	$interpretId           = CreateVariable("Interpret",       3 /*String*/,   $CategoryIdData, 140, '~String');
-//	$categoryId            = CreateVariable("Category",        1 /*Integer*/,  $CategoryIdData, 150 , 'NetPlayer_Category', $actionScriptId, 0);
-//	$cdAlbumNavId          = CreateVariable("CDAlbumNav",      1 /*Integer*/,  $CategoryIdData, 160 , 'NetPlayer_CDAlbumNav', $actionScriptId, -1);
-//	$cdAlbumListId         = CreateVariable("CDAlbumList",     1 /*Integer*/,  $CategoryIdData, 170 , 'NetPlayer_CDAlbumList', $actionScriptId, -1);
-//	$cdTrackNavId          = CreateVariable("CDTrackNav",      1 /*Integer*/,  $CategoryIdData, 180 , 'NetPlayer_CDTrackNav', $actionScriptId, -1);
-//	$cdTrackListId         = CreateVariable("CDTrackList",     1 /*Integer*/,  $CategoryIdData, 190 , 'NetPlayer_CDTrackList', $actionScriptId, -1);
-//	$radioNavId            = CreateVariable("RadioNav",        1 /*Integer*/,  $CategoryIdData, 200 , 'NetPlayer_RadioNav', $actionScriptId, -1);
-//	$radioListId           = CreateVariable("RadioList",       1 /*Integer*/,  $CategoryIdData, 210 , 'NetPlayer_RadioList', $actionScriptId,-1);
-//	$controlTypeId         = CreateVariable("ControlType",     1 /*Integer*/,  $CategoryIdData, 300 , '', null, 0);
-//	$remoteControlId       = CreateVariable("RemoteControl",   3 /*String*/,   $CategoryIdData, 310 , '~HTMLBox', null, '<iframe frameborder="0" width="100%" src="../user/NetPlayer/NetPlayer_MP3Control.php" height=255px </iframe>');
-//	$mobileControlId       = CreateVariable("MobileControl",   3 /*String*/,   $CategoryIdData, 320 , '~HTMLBox', null, '<iframe frameborder="0" width="100%" src="../user/NetPlayer/NetPlayer_Mobile.php" height=1000px </iframe>');
-
-// Werte aus Config zuweisen
-	SetValue($IPAdrr, $GroupData[0]);
-	SetValue($RINCON, $GroupData[1]);
-	}
+		$PowerId        	= CreateVariable(IPSSONOS_VAR_ROOMPOWER,		0 /*Boolean*/, $RoomInstanceId,  10, '~Switch',              	$id_ScriptSettings, IPSSONOS_VAL_POWER_DEFAULT, 'Power');
+		$IPAdrr         	= CreateVariable(IPSSONOS_VAR_IPADDR,			3 /*String*/,  $RoomInstanceId,  20, '', 						null, 				'', '');
+		$RINCON         	= CreateVariable(IPSSONOS_VAR_RINCON,			3 /*String*/,  $RoomInstanceId,  30, '', 						null, 				'', '');
+		$VolumeId      		= CreateVariable(IPSSONOS_VAR_VOLUME,			1 /*Integer*/, $RoomInstanceId,  40, 'IPSSonos_Volume',      	$id_ScriptSettings, IPSSONOS_VAL_VOLUME_DEFAULT, 'Intensity');
+		$TransportId    	= CreateVariable(IPSSONOS_VAR_TRANSPORT,		1 /*Integer*/, $RoomInstanceId,  50, 'IPSSonos_Transport',   	$id_ScriptSettings, IPSSONOS_VAL_TRANSPORT, 'Speaker');
+		$PLAYLIST         	= CreateVariable(IPSSONOS_VAR_PLAYLIST,    		1 /*Integer*/, $RoomInstanceId,  60, 'IPSSonos_Playlists', 	$id_ScriptSettings, IPSSONOS_VAL_PLAYLIST, '');
+		$RADIOSTATION       = CreateVariable(IPSSONOS_VAR_RADIOSTATION,		1 /*Integer*/, $RoomInstanceId,  70, 'IPSSonos_Radiostations',	$id_ScriptSettings, IPSSONOS_VAL_RADIOSTATION, '');
+		$MutingId       	= CreateVariable(IPSSONOS_VAR_MUTE,				0 /*Boolean*/, $RoomInstanceId,  80, 'IPSSonos_Mute',        	$id_ScriptSettings, IPSSONOS_VAL_MUTE_DEFAULT, '');
+		$ShuffleId       	= CreateVariable(IPSSONOS_VAR_SHUFFLE,			0 /*Boolean*/, $RoomInstanceId,  90, 'IPSSonos_Shuffle',    	$id_ScriptSettings, false, '');
+		$RepeatId       	= CreateVariable(IPSSONOS_VAR_REPEAT,			0 /*Boolean*/, $RoomInstanceId,  100, 'IPSSonos_Repeat',     	$id_ScriptSettings, false, '');
+		$RemoteControlId  	= CreateVariable(IPSSONOS_VAR_REMOTE,   		3 /*String*/,  $RoomInstanceId,  110 , '~HTMLBox', null, '<iframe frameborder="0" width="100%" src="../user/IPSSonosPlayer/IPSSonosPlayer_MP3Control.php" height=255px </iframe>');
+		$CoverURIId  		= CreateVariable(IPSSONOS_VAR_COVERURI,   		3 /*String*/,  $RoomInstanceId,  120 ,	'', 						null, 				'', '');
+	
+		// Werte aus Config zuweisen
+		SetValue($IPAdrr, $GroupData[IPSSONOS_VAR_IPADDR]);
+		SetValue($RINCON, $GroupData[IPSSONOS_VAR_RINCON]);
+		}
 
 	SetValue($id_RoomIds, implode(',',$RoomIds));
 	SetValue($id_RoomCount, $RoomId);
@@ -184,45 +171,46 @@
 		$categoryIdWebFrontLeft   = CreateCategory('Left',   $categoryIdWebFront, 100);
 		$categoryIdWebFrontRight  = CreateCategory('Right', $categoryIdWebFront, 200);
 
-		$instanceIdServer  = CreateDummyInstance('IPSSonos Server', $categoryIdWebFrontLeft, 10);
-		CreateLink('Playlists synchronisieren',   $id_ScriptSyncPlaylists, $instanceIdServer, 100);
-		CreateLink('Radiostationen synchronisieren',   $id_ScriptSyncRadiostations, $instanceIdServer, 110);		
+		// Server-Tab
+		$instanceIdServer_Power  	= CreateDummyInstance('Räume', $categoryIdWebFrontLeft, 10);
+		$instanceIdServer_Commands  = CreateDummyInstance('Aktionen', $categoryIdWebFrontLeft, 20);	
+		CreateLink('Alle Räume ausschalten',   			$id_ScriptSwitchAllOff, $instanceIdServer_Commands, 120);
+		
+		// Room-Tabs
+		$RoomId = 1;
+		foreach ($RoomConfig as $GroupName=>$GroupData) {
+			$roomCategoryId = CreateCategory($GroupName, $categoryIdWebFrontRight, 10*$RoomId);
+			$roomInstanceId = IPS_GetObjectIdByIdent($GroupName, $CategoryIdData);
+		
+			// Power-Switch in Server-Tab
+			CreateLink($GroupName,             	IPS_GetObjectIDByIdent(IPSSONOS_VAR_ROOMPOWER,   	$roomInstanceId),   $instanceIdServer_Power, 10*$RoomId);
+			CreateLink('Power',                	IPS_GetObjectIDByIdent(IPSSONOS_VAR_ROOMPOWER,   	$roomInstanceId),   $roomCategoryId, 10);
+			CreateLink('Remote',               	IPS_GetObjectIDByIdent(IPSSONOS_VAR_REMOTE, 		$roomInstanceId),   $roomCategoryId, 20);
+			$roomInstanceId_Player  			= CreateDummyInstance('Player', $roomCategoryId, 30);
+			CreateLink('Lautstärke',           	IPS_GetObjectIDByIdent(IPSSONOS_VAR_VOLUME,      	$roomInstanceId),   $roomInstanceId_Player, 10);
+			CreateLink('Player',               	IPS_GetObjectIDByIdent(IPSSONOS_VAR_TRANSPORT,   	$roomInstanceId),   $roomInstanceId_Player, 20);
+			CreateLink('Muting',               	IPS_GetObjectIDByIdent(IPSSONOS_VAR_MUTE,        	$roomInstanceId),   $roomInstanceId_Player, 30);
+			CreateLink('Shuffle',              	IPS_GetObjectIDByIdent(IPSSONOS_VAR_SHUFFLE,     	$roomInstanceId),   $roomInstanceId_Player, 40);
+			CreateLink('Repeat',               	IPS_GetObjectIDByIdent(IPSSONOS_VAR_REPEAT,      	$roomInstanceId),   $roomInstanceId_Player, 50);
+			$roomInstanceId_Commands  			= CreateDummyInstance('Quellen', $roomCategoryId, 40);			
+			CreateLink('Playlist',             	IPS_GetObjectIDByIdent(IPSSONOS_VAR_PLAYLIST,   		$roomInstanceId),   $roomInstanceId_Commands, 10);
+			CreateLink('Radiostation',         	IPS_GetObjectIDByIdent(IPSSONOS_VAR_RADIOSTATION,   	$roomInstanceId),   $roomInstanceId_Commands, 20);
 
+			$RoomId = $RoomId + 1;
+		}
+		
+		// Config-Tab
+		$ConfigCategoryId = CreateCategory('Config', $categoryIdWebFrontRight, 10*$RoomId, 'Gear');
+		
+		$instanceIdConfig_Query  	= CreateDummyInstance('Periodisches Abfragen der Sonos-Geräte', $ConfigCategoryId, 10);
+		CreateLink('Status',  							IPS_GetObjectIDByIdent(IPSSONOS_VAR_QUERY,   	$id_IPSSonosServerId),   $instanceIdConfig_Query, 10);		
+		CreateLink('Periode in Sekunden',  				IPS_GetObjectIDByIdent(IPSSONOS_VAR_QUERYTIME,  $id_IPSSonosServerId),   $instanceIdConfig_Query, 20);		
 
-//			$roomNames = array(1=>IPSSONOS_CONFIG_ROOMNAME1, 2=>IPSSONOS_CONFIG_ROOMNAME2, 3=>IPSSONOS_CONFIG_ROOMNAME3);
-//			for ($roomId=1;$roomId<=3;$roomId++) {
-			$RoomId = 1;
-
-			foreach ($RoomConfig as $GroupName=>$GroupData) {
-				$roomCategoryId = CreateCategory($GroupName, $categoryIdWebFrontRight, 10*$RoomId);
-				$roomInstanceId = IPS_GetObjectIdByIdent($GroupName, $CategoryIdData);
-
-//				CreateLink('IPSSonos'.$roomId. ' ('.$roomNames[$roomId].')', IPS_GetObjectIDByIdent(IPSSONOS_VAR_ROOMPOWER, $roomInstanceId),   $categoryIdWebFrontRight, $roomId);
-
-				CreateLink('Power',                IPS_GetObjectIDByIdent(IPSSONOS_VAR_ROOMPOWER,   	$roomInstanceId),   $roomCategoryId, 10);
-				CreateLink($GroupName,             IPS_GetObjectIDByIdent(IPSSONOS_VAR_ROOMPOWER,   	$roomInstanceId),   $instanceIdServer, 10*$RoomId);
-
-//				CreateLink('Eingang',              IPS_GetObjectIDByIdent(IPSSONOS_VAR_INPUTSELECT, 	$roomInstanceId),   $roomCategoryId, 20);
-//				CreateLink('Verstärkung',          IPS_GetObjectIDByIdent(IPSSONOS_VAR_INPUTGAIN,   	$roomInstanceId),   $roomCategoryId, 30);
-				CreateLink('Lautstärke',           IPS_GetObjectIDByIdent(IPSSONOS_VAR_VOLUME,      	$roomInstanceId),   $roomCategoryId, 40);
-				CreateLink('Muting',               IPS_GetObjectIDByIdent(IPSSONOS_VAR_MUTE,        	$roomInstanceId),   $roomCategoryId, 50);
-				CreateLink('Player',               IPS_GetObjectIDByIdent(IPSSONOS_VAR_TRANSPORT,   	$roomInstanceId),   $roomCategoryId, 50);
-				CreateLink('Playlist',             IPS_GetObjectIDByIdent(IPSSONOS_VAR_PLAYLIST,   		$roomInstanceId),   $roomCategoryId, 60);
-				CreateLink('Radiostation',         IPS_GetObjectIDByIdent(IPSSONOS_VAR_RADIOSTATION,   	$roomInstanceId),   $roomCategoryId, 70);
-				CreateLink('Shuffle',              IPS_GetObjectIDByIdent(IPSSONOS_VAR_SHUFFLE,     	$roomInstanceId),   $roomCategoryId, 80);
-				CreateLink('Repeat',               IPS_GetObjectIDByIdent(IPSSONOS_VAR_REPEAT,      	$roomInstanceId),   $roomCategoryId, 90);
-
-				//				CreateLink('Balance',              IPS_GetObjectIDByIdent(IPSSONOS_VAR_BALANCE,     $roomInstanceId),   $roomCategoryId, 60);
-//				CreateLink('Höhen',                IPS_GetObjectIDByIdent(IPSSONOS_VAR_TREBLE,      $roomInstanceId),   $roomCategoryId, 70);
-//				CreateLink('Mitten',               IPS_GetObjectIDByIdent(IPSSONOS_VAR_MIDDLE,      $roomInstanceId),   $roomCategoryId, 80);
-//				CreateLink('Bass',                 IPS_GetObjectIDByIdent(IPSSONOS_VAR_BASS,        $roomInstanceId),   $roomCategoryId, 90);
-//				CreateLink('Remote',               IPS_GetObjectIDByIdent(IPSSONOS_VAR_REMOTE,      $roomInstanceId),   $roomCategoryId, 90);
-
-				$RoomId = $RoomId + 1;
-			}
-
-
-
+		$instanceIdConfig_Sync  	= CreateDummyInstance('Playlists synchchronisieren', 			$ConfigCategoryId, 20);
+		CreateLink('Playlists synchronisieren',   		$id_ScriptSyncPlaylists, 		$instanceIdConfig_Sync, 10);
+		CreateLink('Radiostationen synchronisieren',   	$id_ScriptSyncRadiostations, 	$instanceIdConfig_Sync, 20);	
+		
+		//
 		$tabItem = $WFC10_TabPaneItem.$WFC10_TabItem;
 		DeleteWFCItems($WFC10_ConfigId, $tabItem);
 		CreateWFCItemTabPane   ($WFC10_ConfigId, $WFC10_TabPaneItem, $WFC10_TabPaneParent,  $WFC10_TabPaneOrder, $WFC10_TabPaneName, $WFC10_TabPaneIcon);

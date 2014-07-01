@@ -23,7 +23,7 @@
 	 * @file          IPSSonos_SyncRadiostations.ips.php
 	 * @author        Jörg Kling
 	 * @version
-	 * Version 2.50.1, 30.06.2014<br/>
+	 * Version 0.9.4, 07.06.2014<br/>
 	 *
 	 * Synchronisiert Playlists
 	 *

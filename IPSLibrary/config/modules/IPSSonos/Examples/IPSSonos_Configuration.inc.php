@@ -3,24 +3,38 @@
 	 * @ingroup IPSSonos
 	 * @{
 	 *
-	 * IPSSonos Server Konfiguration
+	 * IPSSonos Konfiguration
 	 *
 	 * @file          IPSSonos_Configuration.inc.php
-	 * @author        Jörg Kling
+	 * @author        joki
 	 * @version
-	 * Version 2.50.1, 01.06.2014<br/>
-	 *
-	 * Änderung an den Parametern erfordert ein erneutes Ausführen des Installations Scripts.
+	 * Version 0.9.4, 12.06.2014<br/>
 	 *
 	 */
-
+	IPSUtils_Include ("IPSSonos_Constants.inc.php",      "IPSLibrary::app::modules::IPSSonos");
+	
+	function IPSSonos_GetServerConfiguration() {
+		return array(
+			IPSSONOS_VAR_IPADDR		=>	'192.168.20.103',	// IP Adresse eines Sonosgeräts, dass möglichst immer an ist. Steuert zentrale Funktionen wie z.B. Synchronisation der Playlists
+			);
+	}
 
 	function IPSSonos_GetRoomConfiguration() {
 		return array(
-			'Wohnzimmer'		=>		array('192.168.20.108', 'RINCON_000E5829F33A01400'),
-			'Schlafzimmer'		=>		array('192.168.20.105', 'RINCON_000E5872E10801400'),
-			'Kueche'			=>		array('192.168.20.103', 'RINCON_000E582732C001400'),
+			'Wohnzimmer'	=>	array(
+				IPSSONOS_VAR_IPADDR		=>	'192.168.20.108', 
+				IPSSONOS_VAR_RINCON		=>	'RINCON_000E5829F33A01400',
+				IPSSONOS_VAL_MAXVOL		=> 	'25'),
+			'Schlafzimmer'	=>	array(
+				IPSSONOS_VAR_IPADDR		=>	'192.168.20.105', 
+				IPSSONOS_VAR_RINCON		=>	'RINCON_000E5872E10801400',
+				IPSSONOS_VAL_MAXVOL		=> 	'25'),				
+			'Kueche'		=>	array(
+				IPSSONOS_VAR_IPADDR		=>	'192.168.20.103', 
+				IPSSONOS_VAR_RINCON		=>	'RINCON_000E582732C001400',
+				IPSSONOS_VAL_MAXVOL		=> 	'25'),				
 			);
 	}
+
 	/** @}*/
 ?>

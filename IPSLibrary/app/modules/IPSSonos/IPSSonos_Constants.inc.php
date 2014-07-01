@@ -22,7 +22,7 @@
 	 * IPSSonos Server Konstanten
 	 *
 	 * @file          IPSSonos_Constants.inc.php
-	 * @author        Joerg Kling
+	 * @author        joki
 	 * @version
 	 * Version 0.9.4, 07.06.2014<br/>
 	 *
@@ -58,7 +58,11 @@
 	define ('IPSSONOS_FNC_ROOMSACTIVE',					'ROOMSACTIVE');	
 	define ('IPSSONOS_FNC_SHUFFLE',						'SHUFFLE');	
 	define ('IPSSONOS_FNC_REPEAT',						'REPEAT');			
-
+	define ('IPSSONOS_FNC_QUERYDATA',					'QUERYDATA');			
+	define ('IPSSONOS_FNC_ALLROOMSOFF',					'ALLROOMSOFF');	
+	define ('IPSSONOS_FNC_SETQUERY',					'SETQUERY');	
+	define ('IPSSONOS_FNC_SETQUERYTIME',				'SETQUERYTIME');		
+	
 	//Define Transport
 	define ('IPSSONOS_TRA_PREVIOUS',					'0');	
 	define ('IPSSONOS_TRA_PLAY',						'1');
@@ -81,12 +85,12 @@
 	define ('IPSSONOS_VAL_TRANSPORT',				    3);
 	define ('IPSSONOS_VAL_PLAYLIST',				    0);
 	define ('IPSSONOS_VAL_RADIOSTATION',			  	999);	
-
+	define ('IPSSONOS_VAL_MAXVOL',			  			'MaxVol');	
 
 	// Variablen Definitionen
 	define ('IPSSONOS_VAR_ROOMCOUNT',					'ROOM_COUNT');
 	define ('IPSSONOS_VAR_ROOMIDS',						'ROOM_IDS');
-	define ('IPSSONOS_VAR_MODESERVERDEBUG',				'MODE_SERVERDEBUG');
+//	define ('IPSSONOS_VAR_MODESERVERDEBUG',				'MODE_SERVERDEBUG');
 	define ('IPSSONOS_VAR_IPADDR',						'IPADDR');
 	define ('IPSSONOS_VAR_RINCON',						'RINCON');
 	define ('IPSSONOS_VAR_REMOTE',						'REMOTE');
@@ -98,6 +102,18 @@
 	define ('IPSSONOS_VAR_TRANSPORT',					'TRANSPORT');
 	define ('IPSSONOS_VAR_SHUFFLE',						'SHUFFLE');
 	define ('IPSSONOS_VAR_REPEAT',						'REPEAT');	
-
+	define ('IPSSONOS_VAR_COVERURI',					'COVERURI');	
+	define ('IPSSONOS_VAR_TITLE',						'TITLE');	
+	define ('IPSSONOS_VAR_ALBUM',						'ALBUM');	
+	define ('IPSSONOS_VAR_ARTIST',						'ARTIST');		
+	define ('IPSSONOS_VAR_ALBUMARTIST',					'ALBUMARTIST');	
+	define ('IPSSONOS_VAR_POSITION',					'POSITION');	
+	define ('IPSSONOS_VAR_DURATION',					'DURATION');	
+	define ('IPSSONOS_VAR_QUERY',						'QUERY');	
+	define ('IPSSONOS_VAR_QUERYTIME',					'QUERYTIME');		
+	
+	define ('IPSSONOS_EVT_QUERY',						'QUERYSONOS');	
+	define ('IPSSONOS_EVT_POWERONDELAY',				'POWERONDELAY');
+	
 	/** @}*/
 ?>

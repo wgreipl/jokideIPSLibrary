@@ -20,7 +20,7 @@
  	 * @{
 	 *
 	 * @file          IPSSonos_Room.class.php
-	 * @author        Andreas Brauneis
+	 * @author        joki
 	 *
 	 */
 
@@ -29,22 +29,19 @@
     *
     * Definiert ein IPSSonos_Room Objekt
     *
-    * @author Andreas Brauneis
+    * @author joki
     * @version
-    * Version 2.50.1, 31.01.2012<br/>
+    * Version 0.9, 31.01.2012<br/>
     */
+	IPSUtils_Include ("IPSSonos_Constants.inc.php",       "IPSLibrary::app::modules::IPSSonos");
+	IPSUtils_Include ("IPSSonos_Configuration.inc.php",   "IPSLibrary::config::modules::IPSSonos");
+	
 	class IPSSonos_Room {
 
 		public $IPAddr;
 		public $RINCON;
 	    public $instanceId;
 		public $roomName;	
-	   /**
-       * @private
-       * ID des IPSSonos Server
-       */
-
-	  
 	  
      	/**
        * @private
@@ -104,6 +101,9 @@
 				case IPSSONOS_CMD_AUDIO:
 		      	$variableName = $this->functionMapping[$function];
 		         break;
+				case IPSSONOS_CMD_SERVER:
+		      	$variableName = $function;
+		         break;				 
             default:
                throw new Exception('Unknown Command "'.$command.'", VariableName could NOT be found !!!');
 		   }
@@ -134,7 +134,7 @@
 	    * @param string $value Wert
 		 */
 		public function SetValue ($command, $function, $value) {
-		   $name        = $this->GetVariableName($command, $function);
+		  $name        = $this->GetVariableName($command, $function);
 	      $variableId  = IPS_GetObjectIDByIdent($name, $this->instanceId);
 	      if (GetValue($variableId)<>$value) {
 		 		SetValue($variableId, $value);
@@ -173,13 +173,6 @@
 									return false;
 								}
 							}
-							else {
-								// Check that Sonos device is reachable					
-								if( Sys_Ping( $this->IPAddr, 200 ) == false) {
-									$this->LogErr('Aktion im Raum '.$this->roomName.' konnte nicht ausgeführt werden, da Gerät nicht erreichbar!');
-									return false;
-									}	
-								}
 							$result   = true;
 							break;							
 						default:
@@ -200,11 +193,29 @@
 						return false;
 					}		
 					switch($function) {
-						case IPSSONOS_FNC_VOLUME: /*0..78*/
-//							$result = $roomOk and ($value>=IPSSONOS_VAL_VOLUME_MIN and $value<=IPSSONOS_VAL_VOLUME_MAX);
-//							$errorMsg = "Value '$value' for Volume NOT in Range (use ".IPSSONOS_VAL_VOLUME_MIN." <= value <=".IPSSONOS_VAL_VOLUME_MAX.")";
-							$result   = true;
+						case IPSSONOS_FNC_VOLUME:
+							$result = $this->CheckVolume($value);
+							$errorMsg = 'Lautstärkewert '.$value.' zu hoch für Raum '.$this->roomName;
 							break;
+						case IPSSONOS_FNC_VOLUME_RMP:
+							$result = $this->CheckVolume($value);
+							$errorMsg = 'Lautstärkewert '.$value.' zu hoch für Raum '.$this->roomName;
+							break;
+						case IPSSONOS_FNC_VOLUME_RMPMUTE:
+							$result = $this->CheckVolume($value);
+							$errorMsg = 'Lautstärkewert '.$value.' zu hoch für Raum '.$this->roomName;
+							break;
+						case IPSSONOS_FNC_VOLUME_RMPMUTESLOW:
+							$result = $this->CheckVolume($value);
+							$errorMsg = 'Lautstärkewert '.$value.' zu hoch für Raum '.$this->roomName;
+							break;
+						case IPSSONOS_FNC_VOLUME_INC:
+							$sonos = new PHPSonos($this->IPAddr); 	
+							$current_volume = $sonos->GetVolume();
+							$new_volume = $current_volume + $value;
+							$result = $this->CheckVolume($new_volume);
+							$errorMsg = 'Erhöhung Lautstärke um '.$value.' zu hoch für Raum '.$this->roomName;
+							break;									
 						case IPSSONOS_FNC_MUTE: /*0..78*/
 //							$result = $roomOk and ($value==true or $value==IPSSONOS_VAL_BOOLEAN_TRUE or $value==false or $value==IPSSONOS_VAL_BOOLEAN_FALSE);
 //							$errorMsg = "Value '$value' for Mute NOT in Range (use 0,1 or boolean)";
@@ -221,7 +232,7 @@
 			if (!$result) {
 				$this->LogWrn($errorMsg);
 			}
-			return true;
+			return $result;
 		}
 		
 		/**
@@ -244,6 +255,22 @@
 		 */
 		private function LogErr($msg) {
 			IPSLogger_Err(__file__, $msg);
+		}
+
+		/**
+		 * @private
+		 *
+		 * Protokollierung einer Error Meldung
+		 *
+		 * @param string $msg Meldung 
+		 */
+		private function CheckVolume($value) {
+		
+			$RoomConfig = IPSSonos_GetRoomConfiguration();
+			$GroupData = $RoomConfig[$this->roomName];
+			$val_max = $GroupData[IPSSONOS_VAL_MAXVOL];
+			$result = ($value>=0 and $value<=$val_max);
+			return $result;
 		}
 
 	}
