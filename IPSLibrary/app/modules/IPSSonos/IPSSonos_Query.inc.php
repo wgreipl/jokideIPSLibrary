@@ -25,13 +25,13 @@
 	 */
 
    /**
-    * @class IPSSonos_Room
+    * @class IPSSonos_Query
     *
-    * Definiert ein IPSSonos_Room Objekt
+    * 
     *
     * @author joki
     * @version
-    * Version 0.9.4, 07.06.2014<br/>
+    * Version 0.9.4, 11.08.2014<br/>
     */
 	include_once 'IPSSonos_Server.class.php';
 	IPSUtils_Include ("IPSSonos.inc.php", 				"IPSLibrary::app::modules::IPSSonos");
@@ -61,8 +61,11 @@
 							IPS_SetVariableCustomProfile($variableId , "IPSSonos_Power");
 							$unArmCounter = $unArmCounter - 1;
 							// Set HTML Remote
-							$HTMLRemote = "<table bgcolor=\"273f57\" border=\"0\" width=\"100%\"><tr><td colspan=\"2\" width =\"110\"></td>";
-							$room->setvalue(IPSSONOS_CMD_SERVER, 	IPSSONOS_VAR_REMOTE, 	$HTMLRemote);	
+							$HTMLRemote = "<table border=\"0\" width=\"100%\"><tr><td colspan=\"2\" width =\"110\"></td>";
+							$room->setvalue(IPSSONOS_CMD_SERVER, 	IPSSONOS_VAR_REMOTE, 	$HTMLRemote);
+							// Execute call-back method in IPSSonos_Custom
+							IPSUtils_Include ("IPSSonos_Custom.inc.php",        "IPSLibrary::config::modules::IPSSonos");	
+							IPSSonos_Custom_RoomPowerOn($roomName);							
 						}
 					}
 				}
@@ -85,20 +88,15 @@
 				$room 		= $server->GetRoom($roomName);
 				$roomPower 	= $room->GetValue(IPSSONOS_CMD_ROOM, IPSSONOS_FNC_POWER);
 				
-				//If Sonos not reachable, continue with next room ----------------------------------------------------------------------
-				$isReachable = true; //Sys_Ping( $room->IPAddr, 200 ); Momentan funktioniert Sys_Ping nicht zuverlässig
-				
-				if(( $isReachable == false) or ($roomPower == false)) {
+				//If Sonos not reachable, continue with next room ----------------------------------------------------------------------				
+				if($roomPower == false) {
 
 					$room->setvalue(IPSSONOS_CMD_AUDIO, IPSSONOS_FNC_STOP, IPSSONOS_TRA_STOP);
 					$room->setvalue(IPSSONOS_CMD_ROOM, IPSSONOS_FNC_POWER, false);
 					// Set HTML Remote
-					$HTMLRemote = "<table bgcolor=\"273f57\" border=\"0\" width=\"100%\"><tr><td colspan=\"2\" width =\"110\">Raum ist ausgeschaltet!</td>";
+					$HTMLRemote = "<table border=\"0\" width=\"100%\"><tr><td colspan=\"2\" width =\"110\">Raum ist ausgeschaltet!</td>";
 					$room->setvalue(IPSSONOS_CMD_SERVER, 	IPSSONOS_VAR_REMOTE, 	$HTMLRemote);	
 					continue; // Next foreach - loop
-					if($roomPower == true) {
-						IPSLogger_Com(__file__, "Verbindung zu Sonos-Gerät im Raum ".$roomName." verloren");
-					}
 				}
 
 				//Sonos is reachable, update variables of webfront ----------------------------------------------------------------------			
@@ -197,8 +195,8 @@
 				$PercentBar=$PercentBar . "]";				
 
 				// Set HTML Remote
-				$HTMLRemote = "<table bgcolor=\"273f57\" border=\"0\" width=\"100%\"><tr><td colspan=\"2\" width =\"110\">"
-				. "<img src='".$AlbumArtURI."' width=\"100\" height=\"100\" alt=\"Taggi\"></img></td><td>"
+				$HTMLRemote = "<table border=\"0\" width=\"100%\"><tr><td colspan=\"1\" width =\"110\">"
+				. "<img src='".$AlbumArtURI."' width=\"150\" height=\"150\" alt=\"Cover\"></img></td><td>"
 
 				. "<table><tr></td colspan=\"2\">"
 				. "[". $AlbumTrackNum. "]  <b>" . $Title . "</b> "				
@@ -213,20 +211,19 @@
 				. "<tr><td colspan=\"2\">"
 
 				. $PercentBar
-				. "<td></tr>"
+				. "</td></tr>"
 				. "<tr><td colspan=\"2\">"
 
 	//				. $ZoneStatus
-				. "<td></tr>"
+				. "</td></tr>"
 				. "</table>"
 
 
-				. "</tr><td><table>"
-				. "</td></tr><tr><td>"
-				. "</td> <td>"
+				. "</tr>"
+				. ""
 
-				. "</td></tr></table> <br>";
-				$room->setvalue(IPSSONOS_CMD_SERVER, 	IPSSONOS_VAR_REMOTE, 	$HTMLRemote);					
+				. "</table>";
+				$room->setvalue(IPSSONOS_CMD_SERVER, 	IPSSONOS_VAR_REMOTE, 	$HTMLRemote);
 			}
 		}
 	}

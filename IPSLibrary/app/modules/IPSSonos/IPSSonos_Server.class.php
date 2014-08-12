@@ -42,7 +42,7 @@
     *
     * @author joki
     * @version
-    * Version 0.9.4, 12.06.2014<br/>
+    * Version 0.9.4, 11.08.2014<br/>
     */
 	class IPSSonos_Server {
 
@@ -540,22 +540,20 @@
 			$result			= false;
 			$sonos_lists 	= $sonos->GetSONOSPlaylists();
 			$playlistid		= 0;
-			
+
 			if ($sonos_lists <> null) {
 				foreach ($sonos_lists as $playlist_key => $ls_playlist) {
 
 					$Playlist_File 		= urldecode($ls_playlist['file']);
-					$Playlist_Title 	= $ls_playlist['title'];
+					$Playlist_Title 	= utf8_decode($ls_playlist['title']);
 					
 					if ($Playlist_Title === $playlist) {
 						$sonos->ClearQueue();
 						$sonos->AddToQueue($Playlist_File);
 						$sonos->SetQueue("x-rincon-queue:".$room->RINCON."#0");
-						$result = true;
-						
+						$result = true;						
 						// Update variables of room
-						$room->setvalue(IPSSONOS_CMD_AUDIO, IPSSONOS_FNC_PLAYPLNAME, $playlistid);	
-						
+						$room->setvalue(IPSSONOS_CMD_AUDIO, IPSSONOS_FNC_PLAYPLNAME, $playlistid);							
 					}
 					$playlistid = $playlistid + 1;
 				}
@@ -592,7 +590,7 @@
 				foreach ($sonos_lists as $list_key => $ls_list) {
 
 					$List_File 		= urldecode($ls_list['res']);
-					$List_Title 	= $ls_list['title'];
+					$List_Title 	= utf8_decode($ls_list['title']);
 					
 					if ($List_Title === $radiostation) {					
 						$sonos->ClearQueue();
@@ -648,7 +646,7 @@
 			if ($sonos_lists != null) {
 				foreach ($sonos_lists as $playlist_key => $ls_playlist) {
 	//				$Playlist_Sonos_ID 	= $ls_playlist['id'];
-					$Playlist_Title 	= $ls_playlist['title'];
+					$Playlist_Title 	= utf8_decode($ls_playlist['title']);
 					IPS_SetVariableProfileAssociation('IPSSonos_Playlists', $playlist_key, $Playlist_Title, null, null);
 					$playlist_key 		= $playlist_key + 1;
 				}
@@ -686,7 +684,7 @@
 			$radiostations_lists 	= $sonos->Browse("R:0/0","c"); 
 			if ($radiostations_lists != null) {
 				foreach ($radiostations_lists as $radiostation_key => $ls_radiostation) {
-					$Radiostation_Title 	= $ls_radiostation['title'];
+					$Radiostation_Title 	= utf8_decode($ls_radiostation['title']);
 					IPS_SetVariableProfileAssociation('IPSSonos_Radiostations', $list_key, $Radiostation_Title, null, null);
 					$list_key 		= $list_key + 1;
 				}

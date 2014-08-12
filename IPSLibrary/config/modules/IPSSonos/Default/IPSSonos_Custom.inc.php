@@ -21,56 +21,40 @@
 	 *
 	 *
 	 * @file          IPSSonos_Custom.inc.php
-	 * @author        Jörg Kling
+	 * @author        joki
 	 * @version
-	 *   Version 0.9.1, 01.06.2014<br/>
+	 *   Version 0.9.4, 11.08.2014<br/>
 	 *
 	 * Callback Methoden für IPSSonos
 	 *
 	 */
 
 	/**
-	 * Diese Funktion wird vor dem Schalten eines Raums ausgeführt.
+	 * This function is getting called when a room is switched on
 	 *
 	 * Parameters:
-	 *   @param string $room_name ID des Beleuchtungs Switches in IPSSonos
-	 *   @param boolean $value Wert für Ein/Aus
-	 *   @result boolean TRUE für OK, bei FALSE wurde die Ansteuerung der Beleuchtung bereits in der Callback Funktion erledigt
+	 *   @param string $room_name name of the room in IPSSonos
+	 *   @param boolean $value value on/off
+	 *   @result boolean 
 	 *
 	 */
 	function IPSSonos_Custom_SetRoomPower($room_name, $value) {
-	
-	//*-------------------------------------------------------------*
-			switch ($room_name) {
-				case 'Wohnzimmer':
-					if ($value==true) {
-						IPS_RunScript(37562 );
-						IPS_RunScript(41531 );
-					}
-					else {
-						IPS_RunScript(18951 );
-						IPS_RunScript(30649 );
-					}
-					break;
-					
-				case 'Schlafzimmer':
-					
-					break;
-
-				case 'Kueche':
-					IPSUtils_Include ('IPSLight.inc.php', 'IPSLibrary::app::modules::IPSLight');
-					if ($value==true) {
-						IPSLight_SetSwitchByName('Kueche_Powermate', true);
-					}
-					else {
-						IPSLight_SetSwitchByName('Kueche_Powermate', false);
-					}					
-					break;					
-			}	
 
 		return true;
 	}
-
+	
+	/**
+	 * This function is getting called when IPSSonos detects that a Sonos device was switched on and is now reachable.
+	 * There can be a delay of 30 sec when a power switch is used to shutdown the Sonos device.
+	 *
+	 * Parameters:
+	 *   @param string $room_name name of the room in which the device was detected as "on"
+	 *
+	 */	
+	function IPSSonos_Custom_RoomPowerOn($roomName) {
+	
+		return true;
+	}
 	/** @}*/
 
 ?>
