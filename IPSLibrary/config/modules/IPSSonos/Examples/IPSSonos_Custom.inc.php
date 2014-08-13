@@ -78,10 +78,19 @@
 	 *   @param string $room_name name of the room in which the device was detected as "on"
 	 *
 	 */	
-	function IPSSonos_Custom_RoomPowerOn($roomName) {
-		IPSUtils_Include ("IPSSonos.inc.php", 				"IPSLibrary::app::modules::IPSSonos");
-		IPSSonos_SetVolume($roomName, '10');
+	function IPSSonos_Custom_RoomPowerOn($room_name) {
+
+		switch ($room_name) {
+			
+		case 'Schlafzimmer':
+			IPSUtils_Include ("IPSSonos.inc.php", 				"IPSLibrary::app::modules::IPSSonos");
+			IPSSonos_SetVolume($room_name, '10');
+			break;				
+		}	
+
 		return true;
+
+
 	}
 	/** @}*/
 

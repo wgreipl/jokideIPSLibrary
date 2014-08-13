@@ -51,7 +51,7 @@
 	 *   @param string $room_name name of the room in which the device was detected as "on"
 	 *
 	 */	
-	function IPSSonos_Custom_RoomPowerOn($roomName) {
+	function IPSSonos_Custom_RoomPowerOn($room_name) {
 	
 		return true;
 	}

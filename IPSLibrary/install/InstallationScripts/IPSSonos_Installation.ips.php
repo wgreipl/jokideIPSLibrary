@@ -75,10 +75,6 @@
 	$WFC10_TabPaneName    = $moduleManager->GetConfigValue('TabPaneName', 'WFC10');
 	$WFC10_TabPaneIcon    = $moduleManager->GetConfigValue('TabPaneIcon', 'WFC10');
 	$WFC10_TabPaneOrder   = $moduleManager->GetConfigValueInt('TabPaneOrder', 'WFC10');
-	$WFC10_TabItem        = $moduleManager->GetConfigValue('TabItem', 'WFC10');
-	$WFC10_TabName        = $moduleManager->GetConfigValue('TabName', 'WFC10');
-	$WFC10_TabIcon        = $moduleManager->GetConfigValue('TabIcon', 'WFC10');
-	$WFC10_TabOrder       = $moduleManager->GetConfigValueInt('TabOrder', 'WFC10');
 
 	$Mobile_Enabled       = $moduleManager->GetConfigValue('Enabled', 'Mobile');
 	$Mobile_Path          = $moduleManager->GetConfigValue('Path', 'Mobile');
@@ -210,13 +206,11 @@
 		CreateLink('Playlists synchronisieren',   		$id_ScriptSyncPlaylists, 		$instanceIdConfig_Sync, 10);
 		CreateLink('Radiostationen synchronisieren',   	$id_ScriptSyncRadiostations, 	$instanceIdConfig_Sync, 20);	
 		
-		//
-		$tabItem = $WFC10_TabPaneItem.$WFC10_TabItem;
-		DeleteWFCItems($WFC10_ConfigId, $tabItem);
-		CreateWFCItemTabPane   ($WFC10_ConfigId, $WFC10_TabPaneItem, $WFC10_TabPaneParent,  $WFC10_TabPaneOrder, $WFC10_TabPaneName, $WFC10_TabPaneIcon);
-		CreateWFCItemSplitPane ($WFC10_ConfigId, $tabItem,           $WFC10_TabPaneItem,    $WFC10_TabOrder,     $WFC10_TabName,     $WFC10_TabIcon, 1 /*Vertical*/, 30 /*Width*/, 0 /*Target=Pane1*/, 0/*UsePerc*/, 'true');
-		CreateWFCItemCategory  ($WFC10_ConfigId, $tabItem.'_Left',   $tabItem,   10, '', '', $categoryIdWebFrontLeft   /*BaseId*/, 'false' /*BarBottomVisible*/);
-		CreateWFCItemCategory  ($WFC10_ConfigId, $tabItem.'_Right',  $tabItem,   20, '', '', $categoryIdWebFrontRight   /*BaseId*/, 'true' /*BarBottomVisible*/);
+		// Add Tab to Webfront
+		DeleteWFCItems($WFC10_ConfigId, $WFC10_TabPaneItem);
+		CreateWFCItemSplitPane ($WFC10_ConfigId, $WFC10_TabPaneItem.'SP',    $WFC10_TabPaneParent,    $WFC10_TabPaneOrder,     $WFC10_TabPaneName,     $WFC10_TabPaneIcon, 1 /*Vertical*/, 30 /*Width*/, 0 /*Target=Pane1*/, 0/*UsePerc*/, 'true');
+		CreateWFCItemCategory  ($WFC10_ConfigId, $WFC10_TabPaneItem.'SP_Left',   $WFC10_TabPaneItem.'SP',   10, '', '', $categoryIdWebFrontLeft   /*BaseId*/, 'false' /*BarBottomVisible*/);
+		CreateWFCItemCategory  ($WFC10_ConfigId, $WFC10_TabPaneItem.'SP_Right',  $WFC10_TabPaneItem.'SP',   20, '', '', $categoryIdWebFrontRight   /*BaseId*/, 'true' /*BarBottomVisible*/);
 
 		ReloadAllWebFronts();
 	}
