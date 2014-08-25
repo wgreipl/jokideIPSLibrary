@@ -32,7 +32,7 @@
 	 * @file          IPSSonos_Installation.ips.php
 	 * @author        joki
 	 * @version
-	 *  Version 0.9.4, 12.06.2014<br/>
+	 *  Version 1.0.0, 31.08.2014<br/>
 	 *
 	 * Script zur kompletten Installation der IPSSonos Steuerung.
 	 *
@@ -137,18 +137,18 @@
 		$RoomInstanceId = CreateDummyInstance($GroupName, $CategoryIdData, 100+$RoomId);
 		$RoomIds[]      = $RoomInstanceId;
 
-		$PowerId        	= CreateVariable(IPSSONOS_VAR_ROOMPOWER,		0 /*Boolean*/, $RoomInstanceId,  10, '~Switch',              	$id_ScriptSettings, IPSSONOS_VAL_POWER_DEFAULT, 'Power');
-		$IPAdrr         	= CreateVariable(IPSSONOS_VAR_IPADDR,			3 /*String*/,  $RoomInstanceId,  20, '', 						null, 				'', '');
-		$RINCON         	= CreateVariable(IPSSONOS_VAR_RINCON,			3 /*String*/,  $RoomInstanceId,  30, '', 						null, 				'', '');
-		$VolumeId      		= CreateVariable(IPSSONOS_VAR_VOLUME,			1 /*Integer*/, $RoomInstanceId,  40, 'IPSSonos_Volume',      	$id_ScriptSettings, IPSSONOS_VAL_VOLUME_DEFAULT, 'Intensity');
-		$TransportId    	= CreateVariable(IPSSONOS_VAR_TRANSPORT,		1 /*Integer*/, $RoomInstanceId,  50, 'IPSSonos_Transport',   	$id_ScriptSettings, IPSSONOS_VAL_TRANSPORT, 'Speaker');
-		$PLAYLIST         	= CreateVariable(IPSSONOS_VAR_PLAYLIST,    		1 /*Integer*/, $RoomInstanceId,  60, 'IPSSonos_Playlists', 	$id_ScriptSettings, IPSSONOS_VAL_PLAYLIST, '');
-		$RADIOSTATION       = CreateVariable(IPSSONOS_VAR_RADIOSTATION,		1 /*Integer*/, $RoomInstanceId,  70, 'IPSSonos_Radiostations',	$id_ScriptSettings, IPSSONOS_VAL_RADIOSTATION, '');
-		$MutingId       	= CreateVariable(IPSSONOS_VAR_MUTE,				0 /*Boolean*/, $RoomInstanceId,  80, 'IPSSonos_Mute',        	$id_ScriptSettings, IPSSONOS_VAL_MUTE_DEFAULT, '');
-		$ShuffleId       	= CreateVariable(IPSSONOS_VAR_SHUFFLE,			0 /*Boolean*/, $RoomInstanceId,  90, 'IPSSonos_Shuffle',    	$id_ScriptSettings, false, '');
-		$RepeatId       	= CreateVariable(IPSSONOS_VAR_REPEAT,			0 /*Boolean*/, $RoomInstanceId,  100, 'IPSSonos_Repeat',     	$id_ScriptSettings, false, '');
-		$RemoteControlId  	= CreateVariable(IPSSONOS_VAR_REMOTE,   		3 /*String*/,  $RoomInstanceId,  110 , '~HTMLBox', null, '<iframe frameborder="0" width="100%" src="../user/IPSSonosPlayer/IPSSonosPlayer_MP3Control.php" height=255px </iframe>');
-		$CoverURIId  		= CreateVariable(IPSSONOS_VAR_COVERURI,   		3 /*String*/,  $RoomInstanceId,  120 ,	'', 						null, 				'', '');
+		$PowerId        	= CreateVariable(IPSSONOS_VAR_ROOMPOWER,		0 /*Boolean*/, $RoomInstanceId,  10,   '~Switch',              		$id_ScriptSettings, IPSSONOS_VAL_POWER_DEFAULT, 'Power');
+		$IPAdrr         	= CreateVariable(IPSSONOS_VAR_IPADDR,			3 /*String*/,  $RoomInstanceId,  20,   '', 							null, 				'', '');
+		$RINCON         	= CreateVariable(IPSSONOS_VAR_RINCON,			3 /*String*/,  $RoomInstanceId,  30,   '', 							null, 				'', '');
+		$VolumeId      		= CreateVariable(IPSSONOS_VAR_VOLUME,			1 /*Integer*/, $RoomInstanceId,  40,   'IPSSonos_Volume',      		$id_ScriptSettings, IPSSONOS_VAL_VOLUME_DEFAULT, 'Intensity');
+		$TransportId    	= CreateVariable(IPSSONOS_VAR_TRANSPORT,		1 /*Integer*/, $RoomInstanceId,  50,   'IPSSonos_Transport',   		$id_ScriptSettings, IPSSONOS_VAL_TRANSPORT, 'Speaker');
+		$PLAYLIST         	= CreateVariable(IPSSONOS_VAR_PLAYLIST,    		1 /*Integer*/, $RoomInstanceId,  60,   'IPSSonos_Playlists', 		$id_ScriptSettings, IPSSONOS_VAL_PLAYLIST, '');
+		$RADIOSTATION       = CreateVariable(IPSSONOS_VAR_RADIOSTATION,		1 /*Integer*/, $RoomInstanceId,  70,   'IPSSonos_Radiostations',	$id_ScriptSettings, IPSSONOS_VAL_RADIOSTATION, '');
+		$MutingId       	= CreateVariable(IPSSONOS_VAR_MUTE,				0 /*Boolean*/, $RoomInstanceId,  80,   'IPSSonos_Mute',        		$id_ScriptSettings, IPSSONOS_VAL_MUTE_DEFAULT, '');
+		$ShuffleId       	= CreateVariable(IPSSONOS_VAR_SHUFFLE,			0 /*Boolean*/, $RoomInstanceId,  90,   'IPSSonos_Shuffle',    		$id_ScriptSettings, false, '');
+		$RepeatId       	= CreateVariable(IPSSONOS_VAR_REPEAT,			0 /*Boolean*/, $RoomInstanceId,  100,  'IPSSonos_Repeat',     		$id_ScriptSettings, false, '');
+		$RemoteControlId  	= CreateVariable(IPSSONOS_VAR_REMOTE,   		3 /*String*/,  $RoomInstanceId,  110 , '~HTMLBox', 					null, '<iframe frameborder="0" width="100%" src="../user/IPSSonosPlayer/IPSSonosPlayer_MP3Control.php" height=255px </iframe>');
+		$CoverURIId  		= CreateVariable(IPSSONOS_VAR_COVERURI,   		3 /*String*/,  $RoomInstanceId,  120 , '', 							null, 				'', '');
 	
 		// Werte aus Config zuweisen
 		SetValue($IPAdrr, $GroupData[IPSSONOS_VAR_IPADDR]);
@@ -162,15 +162,15 @@
 	// Webfront Installation
 	// ----------------------------------------------------------------------------------------------------------------------------
 	if ($WFC10_Enabled) {
-		$categoryIdWebFront         = CreateCategoryPath($WFC10_Path);
+		$categoryIdWebFront			= CreateCategoryPath($WFC10_Path);
 		EmptyCategory($categoryIdWebFront);
-		$categoryIdWebFrontLeft   = CreateCategory('Left',   $categoryIdWebFront, 100);
-		$categoryIdWebFrontRight  = CreateCategory('Right', $categoryIdWebFront, 200);
+		$categoryIdWebFrontLeft   	= CreateCategory('Left',   $categoryIdWebFront, 100);
+		$categoryIdWebFrontRight  	= CreateCategory('Right', $categoryIdWebFront, 200);
 
 		// Server-Tab
 		$instanceIdServer_Power  	= CreateDummyInstance('Räume', $categoryIdWebFrontLeft, 10);
 		$instanceIdServer_Commands  = CreateDummyInstance('Aktionen', $categoryIdWebFrontLeft, 20);	
-		CreateLink('Alle Räume ausschalten',   			$id_ScriptSwitchAllOff, $instanceIdServer_Commands, 120);
+		CreateLink('Alle Räume ausschalten', $id_ScriptSwitchAllOff, $instanceIdServer_Commands, 120);
 		
 		// Room-Tabs
 		$RoomId = 1;
@@ -198,13 +198,13 @@
 		// Config-Tab
 		$ConfigCategoryId = CreateCategory('Config', $categoryIdWebFrontRight, 10*$RoomId, 'Gear');
 		
-		$instanceIdConfig_Query  	= CreateDummyInstance('Periodisches Abfragen der Sonos-Geräte', $ConfigCategoryId, 10);
-		CreateLink('Status',  							IPS_GetObjectIDByIdent(IPSSONOS_VAR_QUERY,   	$id_IPSSonosServerId),   $instanceIdConfig_Query, 10);		
-		CreateLink('Periode in Sekunden',  				IPS_GetObjectIDByIdent(IPSSONOS_VAR_QUERYTIME,  $id_IPSSonosServerId),   $instanceIdConfig_Query, 20);		
+		$instanceIdConfig_Query  				= CreateDummyInstance('Periodisches Abfragen der Sonos-Geräte', $ConfigCategoryId, 10);
+		CreateLink('Status',  					IPS_GetObjectIDByIdent(IPSSONOS_VAR_QUERY,   	$id_IPSSonosServerId),   $instanceIdConfig_Query, 10);		
+		CreateLink('Periode in Sekunden',  		IPS_GetObjectIDByIdent(IPSSONOS_VAR_QUERYTIME,  $id_IPSSonosServerId),   $instanceIdConfig_Query, 20);		
 
-		$instanceIdConfig_Sync  	= CreateDummyInstance('Playlists synchchronisieren', 			$ConfigCategoryId, 20);
-		CreateLink('Playlists synchronisieren',   		$id_ScriptSyncPlaylists, 		$instanceIdConfig_Sync, 10);
-		CreateLink('Radiostationen synchronisieren',   	$id_ScriptSyncRadiostations, 	$instanceIdConfig_Sync, 20);	
+		$instanceIdConfig_Sync  				= CreateDummyInstance('Playlists synchchronisieren', 			$ConfigCategoryId, 20);
+		CreateLink('Playlists synchronisieren', $id_ScriptSyncPlaylists, 		$instanceIdConfig_Sync, 10);
+		CreateLink('Radiostationen synchronisieren', $id_ScriptSyncRadiostations, 	$instanceIdConfig_Sync, 20);	
 		
 		// Add Tab to Webfront
 		DeleteWFCItems($WFC10_ConfigId, $WFC10_TabPaneItem);

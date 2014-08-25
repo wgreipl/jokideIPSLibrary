@@ -24,7 +24,7 @@
 	 * @file          IPSSonos_Constants.inc.php
 	 * @author        joki
 	 * @version
-	 * Version 0.9.4, 07.06.2014<br/>
+	 * Version 1.0.0, 31.08.2014<br/>
 	 *
 	 */
 

@@ -31,7 +31,7 @@
     *
     * @author joki
     * @version
-    * Version 0.9.4, 11.08.2014<br/>
+    * Version 1.0.0, 31.08.2014<br/>
     */
 	include_once 'IPSSonos_Server.class.php';
 	IPSUtils_Include ("IPSSonos.inc.php", 				"IPSLibrary::app::modules::IPSSonos");
@@ -88,7 +88,7 @@
 				$room 		= $server->GetRoom($roomName);
 				$roomPower 	= $room->GetValue(IPSSONOS_CMD_ROOM, IPSSONOS_FNC_POWER);
 				
-				//If Sonos not reachable, continue with next room ----------------------------------------------------------------------				
+				//If Sonos switched off, continue with next room ----------------------------------------------------------------------				
 				if($roomPower == false) {
 
 					$room->setvalue(IPSSONOS_CMD_AUDIO, IPSSONOS_FNC_STOP, IPSSONOS_TRA_STOP);
@@ -97,8 +97,13 @@
 					$HTMLRemote = "<table border=\"0\" width=\"100%\"><tr><td colspan=\"2\" width =\"110\">Raum ist ausgeschaltet!</td>";
 					$room->setvalue(IPSSONOS_CMD_SERVER, 	IPSSONOS_VAR_REMOTE, 	$HTMLRemote);	
 					continue; // Next foreach - loop
+				}				
+				// Check that Sonos device is reachable					
+				if( Sys_Ping( $room->IPAddr, 200 ) == false) {
+					IPSLogger_Wrn(__file__, 'Raum '.$room->roomName.' konnte nicht abgefragt werden, da Sonos-Gerät nicht erreichbar!');
+					continue; // Next foreach - loop
 				}
-
+				
 				//Sonos is reachable, update variables of webfront ----------------------------------------------------------------------			
 				$Title			=	null;
 				$AlbumArtURI	=	null;
@@ -119,6 +124,7 @@
 				$MuteInfo 				= $sonos->GetMute();
 				$TransportSettingsInfo 	= $sonos->GetTransportSettings();	
 				
+				// Update status ------------------------------------------------------------------------------------------------------
 				switch ($Status) {
 
 					case 1:		//Playing
@@ -127,25 +133,53 @@
 					case 2:		//Paused
 						$room->setvalue(IPSSONOS_CMD_AUDIO, IPSSONOS_FNC_PAUSE, IPSSONOS_TRA_PAUSE);
 						break;
-					case 1:		//Stopped
+					case 3:		//Stopped
 						$room->setvalue(IPSSONOS_CMD_AUDIO, IPSSONOS_FNC_STOP, IPSSONOS_TRA_STOP);
 						break;					
 				}
 				
-				$room->setvalue(IPSSONOS_CMD_AUDIO, IPSSONOS_FNC_VOLUME, $VolumeInfo);
-				$room->setvalue(IPSSONOS_CMD_AUDIO, IPSSONOS_FNC_MUTE, $MuteInfo);
+				$room->setvalue(IPSSONOS_CMD_AUDIO, IPSSONOS_FNC_VOLUME, $VolumeInfo); // Update Volume
+				$room->setvalue(IPSSONOS_CMD_AUDIO, IPSSONOS_FNC_MUTE, $MuteInfo);     // Update Mute
 
-				//Update remote ------------------------------------------------------------------------------------------------------			
-				// if duration is empty, radio is playing
-				if ($PosInfo["duration"]== "") { $RadioIsPlaying = true; }
-				else {$RadioIsPlaying = false;}
+				// Update remote ------------------------------------------------------------------------------------------------------			
+
+				// [URI] => x-sonos-spotify
+				// [URI] => x-rincon-mp3radio
+				// [URI] => x-file-cifs
+				// [TrackURI] => x-sonos-htastream:RINCON_000E58B264B501400:spdif
+				// [TrackURI] => x-rincon:RINCON_000E5872E10801400
 				
-				$Position		= 	sec_to_time(time_to_sec($PosInfo["position"]));
-				$Duration		=	sec_to_time(time_to_sec($PosInfo["duration"]));							
-
-				if ($RadioIsPlaying) {
+				// Identify type of player
+				if ($Status === 3) {
+				
+					$PlayerType = "Stop";
+				
+				}
+				elseif ((substr($PosInfo["URI"], 0, 11) === "x-file-cifs") or 
+						(substr($PosInfo["URI"], 0, 15) === "x-sonos-spotify")) {
+				
+					$PlayerType = "Song";
 					
-					if (isset($MediaInfo["title"])&&($MediaInfo["title"]!="")){
+					$Title			= utf8_decode($PosInfo["title"]);
+					$AlbumArtURI	= $PosInfo["albumArtURI"];
+					$Artist			= utf8_decode($PosInfo["artist"]);
+					$Album			= utf8_decode($PosInfo["album"]);	
+					$Position		= sec_to_time(time_to_sec($PosInfo["position"]));
+					$Duration		= sec_to_time(time_to_sec($PosInfo["duration"]));	
+				
+					// Calculate Percent Played Bar
+					@$Percent_Played= (int) (time_to_sec($PosInfo["position"]) / time_to_sec($PosInfo["duration"]) *100);
+					$PercentBar= "[";
+					for ($i=1; $i<=(0.25*$Percent_Played-1);$i++) $PercentBar=$PercentBar. "-";
+					$PercentBar=$PercentBar. "|";
+					for ($i=(0.25*$Percent_Played-1); $i<=25;$i++) $PercentBar=$PercentBar. "-";
+					$PercentBar=$PercentBar . "]";	
+				}
+				elseif ((substr($PosInfo["URI"], 0, 17) === "x-rincon-mp3radio")) {
+				
+					 $PlayerType = "Radio"; 
+					 
+					 if (isset($MediaInfo["title"])&&($MediaInfo["title"]!="")){
 						if($Artist!="Station: ". $MediaInfo["title"]){
 							// only ask tunein if there is a change in radio tune in
 							$Artist	= "Station: ".$MediaInfo["title"];
@@ -159,7 +193,7 @@
 									$AlbumArtURI="";
 							}
 						}
-	//						// do not set Buffering Info
+						// do not set buffering info
 						if($PosInfo["streamContent"]!="ZPSTR_BUFFERING" &&
 							$PosInfo["streamContent"]!="ZPSTR_CONNECTING"
 							&& $PosInfo["streamContent"]!="")
@@ -167,62 +201,100 @@
 						 $Title  = preg_replace('#(.*?)\|(.*)#is','$1',$PosInfo["streamContent"]); // Tunein sends additional Information which could be sperated by a |
 						 } 
 					}
-					else {
-						// ???
-					
-					}
-				}				
-				else {
-						// No radio broadcast
-						$Title			= utf8_decode($PosInfo["title"]);
-						$AlbumArtURI	= $PosInfo["albumArtURI"];
-						$Artist			= utf8_decode($PosInfo["artist"]);
-						$Album			= utf8_decode($PosInfo["album"]);	
-	//						$AlbumTrackNum	=	$PosInfo["albumTrackNum"];						
-					}
-				
-
-				// Calculate Percent Played Bar
-				if($RadioIsPlaying)	{
-					$Percent_Played=1;
-				} else {
-					@$Percent_Played= (int) (time_to_sec($PosInfo["position"]) / time_to_sec($PosInfo["duration"]) *100);
 				}
-				$PercentBar= "[";
-				for ($i=1; $i<=(0.25*$Percent_Played-1);$i++) $PercentBar=$PercentBar. "-";
-				$PercentBar=$PercentBar. "|";
-				for ($i=(0.25*$Percent_Played-1); $i<=25;$i++) $PercentBar=$PercentBar. "-";
-				$PercentBar=$PercentBar . "]";				
-
+				elseif ($PosInfo["URI"] === "") {
+					if ((substr($PosInfo["TrackURI"], 0, 18) === "x-sonos-htastream"))
+					 $PlayerType = "External";
+					elseif ((substr($PosInfo["TrackURI"], 0, 8) === "x-rincon")) {
+					 $PlayerType = "Groupmember"; } 
+					}
+				else { $PlayerType = "Other"; } ;
+				
 				// Set HTML Remote
-				$HTMLRemote = "<table border=\"0\" width=\"100%\"><tr><td colspan=\"1\" width =\"110\">"
-				. "<img src='".$AlbumArtURI."' width=\"150\" height=\"150\" alt=\"Cover\"></img></td><td>"
+				$HTMLRemote = 				"<table border=\"0\" cellpadding=\"1\" cellspacing=\"1\" style=\"width: 200;\">";
+				$HTMLRemote = $HTMLRemote.		"<tbody>";	
 
-				. "<table><tr></td colspan=\"2\">"
-				. "[". $AlbumTrackNum. "]  <b>" . $Title . "</b> "				
-				. "[". ''. "]  <b>" . $Title . "</b> "
-				. "</td>"
+				switch ($PlayerType) {
+				
+					case "Stop":
+						$HTMLRemote = $HTMLRemote.			"<tr>";
+						$HTMLRemote = $HTMLRemote.				"<td>Player angehalten</td>"; 
+						$HTMLRemote = $HTMLRemote.			"</tr>";				
+					break;
+					
+					case "Song":
+						$HTMLRemote = $HTMLRemote. 			"<tr>";
+						$HTMLRemote = $HTMLRemote.				"<td rowspan=\"3\"><img alt=\"\" height=\"150\" src=\"".$AlbumArtURI."\" width=\"150\" /></td>";
+						$HTMLRemote = $HTMLRemote.				"<td>&nbsp;<b>".$Title."</b></td>";
+						$HTMLRemote = $HTMLRemote.			"</tr>";
+						$HTMLRemote = $HTMLRemote.			"<tr>";
+						$HTMLRemote = $HTMLRemote. 				"<td>";
+						$HTMLRemote = $HTMLRemote.				"<table border=\"0\">";
+						$HTMLRemote = $HTMLRemote.					"<tbody>";
+						$HTMLRemote = $HTMLRemote.						"<tr>";
+						$HTMLRemote = $HTMLRemote.							"<td>".$Artist."  </td>";
+						$HTMLRemote = $HTMLRemote.							"<td>-  ".$Album."</td>";
+						$HTMLRemote = $HTMLRemote.						"</tr>";
+						$HTMLRemote = $HTMLRemote.						"<td> </td>"; // Empty row
+						$HTMLRemote = $HTMLRemote.						"<tr>";
+						$HTMLRemote = $HTMLRemote.							"<td colspan=\"2\">".$Position."/".$Duration."</td>";
+						$HTMLRemote = $HTMLRemote.						"</tr>";
+						$HTMLRemote = $HTMLRemote.						"<tr>";
+						$HTMLRemote = $HTMLRemote.							"<td colspan=\"2\">".$PercentBar."</td>";
+						$HTMLRemote = $HTMLRemote.						"</tr>";
+						$HTMLRemote = $HTMLRemote.					"</tbody>";
+						$HTMLRemote = $HTMLRemote.				"</table>";
+						$HTMLRemote = $HTMLRemote.				"</td>";
+						$HTMLRemote = $HTMLRemote.			"</tr>";
+						$HTMLRemote = $HTMLRemote.			"<tr>";
+						$HTMLRemote = $HTMLRemote.				"<td> </td>"; // Additional row for enhancements
+						$HTMLRemote = $HTMLRemote.			"</tr>";		
+					break;
+					
+					case "Radio":	
+						$HTMLRemote = $HTMLRemote. 			"<tr>";
+						$HTMLRemote = $HTMLRemote.				"<td rowspan=\"3\"><img alt=\"Cover\" height=\"150\" src=\"".$AlbumArtURI."\" width=\"150\" /></td>";
+						$HTMLRemote = $HTMLRemote.				"<td style=\"text-align: left; vertical-align: top;\">&nbsp;<b>".$Artist."</b></td>";
+						$HTMLRemote = $HTMLRemote.			"</tr>";
+						$HTMLRemote = $HTMLRemote.			"<tr>";
+						$HTMLRemote = $HTMLRemote. 				"<td style=\"text-align: left; vertical-align: top;\">".$Title."  </td>";
+						$HTMLRemote = $HTMLRemote.			"</tr>";
+						$HTMLRemote = $HTMLRemote.			"<tr>";
+						$HTMLRemote = $HTMLRemote.				"<td> </td>"; // Additional row for enhancements
+						$HTMLRemote = $HTMLRemote.			"</tr>";		
+					break;
+					
+					case "Groupmember":
+						$HTMLRemote = $HTMLRemote.			"<tr>";
+						$HTMLRemote = $HTMLRemote.				"<td>Player ist in Gruppe</td>"; 
+						$HTMLRemote = $HTMLRemote.			"</tr>";
+						$HTMLRemote = $HTMLRemote.			"<tr>";
+						$HTMLRemote = $HTMLRemote.				"<td> </td>"; // Additional row for enhancements
+						$HTMLRemote = $HTMLRemote.			"</tr>";						
+					break;
+					
+					case "External":
+						$HTMLRemote = $HTMLRemote.			"<tr>";
+						$HTMLRemote = $HTMLRemote.				"<td>Player verwendet externen Eingang</td>"; 
+						$HTMLRemote = $HTMLRemote.			"</tr>";
+						$HTMLRemote = $HTMLRemote.			"<tr>";
+						$HTMLRemote = $HTMLRemote.				"<td> </td>"; // Additional row for enhancements
+						$HTMLRemote = $HTMLRemote.			"</tr>";						
+					break;
+					
+					case "Other":
+						$HTMLRemote = $HTMLRemote.			"<tr>";
+						$HTMLRemote = $HTMLRemote.				"<td>Player verwendet andere Quelle</td>"; 
+						$HTMLRemote = $HTMLRemote.			"</tr>";
+						$HTMLRemote = $HTMLRemote.			"<tr>";
+						$HTMLRemote = $HTMLRemote.				"<td> </td>"; // Additional row for enhancements
+						$HTMLRemote = $HTMLRemote.			"</tr>";						
+					break;							
+				}					
 
-				. "<td>"
-				. $Artist . " </td><td width=\"50%\"> " . $Album
-				. "</td></tr><tr><td>"
-				.  $Position. "/" . $Duration . " " 
-				. "</td></tr>"
-				. "<tr><td colspan=\"2\">"
+				$HTMLRemote = $HTMLRemote.		"</tbody>";
+				$HTMLRemote = $HTMLRemote.		"</table>";	
 
-				. $PercentBar
-				. "</td></tr>"
-				. "<tr><td colspan=\"2\">"
-
-	//				. $ZoneStatus
-				. "</td></tr>"
-				. "</table>"
-
-
-				. "</tr>"
-				. ""
-
-				. "</table>";
 				$room->setvalue(IPSSONOS_CMD_SERVER, 	IPSSONOS_VAR_REMOTE, 	$HTMLRemote);
 			}
 		}
