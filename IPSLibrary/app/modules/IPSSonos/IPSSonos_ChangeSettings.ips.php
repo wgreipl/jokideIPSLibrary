@@ -43,7 +43,7 @@
 		$instanceId = IPS_GetParent($variableId);
 		
 		if ($serverId<>$instanceId) {
-			$roomName = IPS_GetIdent($instanceId);
+			$roomName = IPS_GetName($instanceId);
 		}
 		
 		switch($variableIdent) {

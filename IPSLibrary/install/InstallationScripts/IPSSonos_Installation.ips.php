@@ -32,7 +32,7 @@
 	 * @file          IPSSonos_Installation.ips.php
 	 * @author        joki
 	 * @version
-	 *  Version 0.9.4, 12.06.2014<br/>
+	 * Version 1.0.0, 01.09.2014<br/>
 	 *
 	 * Script zur kompletten Installation der IPSSonos Steuerung.
 	 *
