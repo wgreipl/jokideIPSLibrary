@@ -23,7 +23,7 @@
 	 * @author        joki
 	 *
 	 * @version
-	 * Version 1.0.0, 31.08.2014
+	 * Version 0.9.4, 11.08.2014
 	 *
 	 * Dieses Script ist als Action Script für diverse IPSSonos Variablen hinterlegt, um
 	 * eine Änderung über das WebFront zu ermöglichen.

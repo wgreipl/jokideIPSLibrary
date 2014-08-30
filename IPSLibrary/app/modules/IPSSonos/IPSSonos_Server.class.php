@@ -42,7 +42,7 @@
     *
     * @author joki
     * @version
-    * Version 1.0.0, 31.08.2014<br/>
+    * Version 0.9.4, 11.08.2014<br/>
     */
 	class IPSSonos_Server {
 

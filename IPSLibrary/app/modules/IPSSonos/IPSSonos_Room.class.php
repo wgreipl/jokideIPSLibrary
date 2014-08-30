@@ -31,7 +31,7 @@
     *
     * @author joki
     * @version
-    * Version 1.0.0, 31.08.2014<br/>
+    * Version 0.9, 31.01.2012<br/>
     */
 	IPSUtils_Include ("IPSSonos_Constants.inc.php",       "IPSLibrary::app::modules::IPSSonos");
 	IPSUtils_Include ("IPSSonos_Configuration.inc.php",   "IPSLibrary::config::modules::IPSSonos");
@@ -168,10 +168,10 @@
 									return false;
 								}
 								// Check that Sonos device is reachable					
-//								if( Sys_Ping( $this->IPAddr, 200 ) == false) {
-//									$this->LogErr('Raum '.$this->roomName.' konnte nicht ausgeschaltet werden, da Sonos-Gerät nicht erreichbar!');
-//									return false;
-//								}
+								if( Sys_Ping( $this->IPAddr, 200 ) == false) {
+									$this->LogErr('Raum '.$this->roomName.' konnte nicht ausgeschaltet werden, da Sonos-Gerät nicht erreichbar!');
+									return false;
+								}
 							}
 							$result   = true;
 							break;							

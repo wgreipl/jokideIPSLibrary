@@ -25,7 +25,7 @@
 	 * @file          IPSSonos.inc.php
 	 * @author        jokie
 	 * @version
-	 * Version 1.0.0, 31.08.2014<br/>
+	 * Version 0.9.4, 12.06.2014<br/>
 	 *
 	 * Dieses File kann von anderen Scripts per INCLUDE eingebunden werden und enthält Funktionen
 	 * um alle IPSSonos Funktionen bequem per Funktionsaufruf steueren zu können.
@@ -68,10 +68,10 @@
 	 *  
 	 *  @details Details
 	 */
-//	function IPSSonos_QueryData() {
-//		$server = IPSSonos_GetServer();
-//		return $server->SendData(IPSSONOS_CMD_SERVER, null, IPSSONOS_FNC_QUERYDATA, null);
-//	}	
+	function IPSSonos_QueryData() {
+		$server = IPSSonos_GetServer();
+		return $server->SendData(IPSSONOS_CMD_SERVER, null, IPSSONOS_FNC_QUERYDATA, null);
+	}	
 
 	/**
 	 *  @brief Brief
