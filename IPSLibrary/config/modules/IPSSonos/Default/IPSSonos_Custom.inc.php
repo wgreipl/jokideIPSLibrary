@@ -23,7 +23,7 @@
 	 * @file          IPSSonos_Custom.inc.php
 	 * @author        joki
 	 * @version
-	 *   Version 0.9.4, 11.08.2014<br/>
+	 * Version 1.0.0, 01.09.2014<br/>
 	 *
 	 * Callback Methoden für IPSSonos
 	 *

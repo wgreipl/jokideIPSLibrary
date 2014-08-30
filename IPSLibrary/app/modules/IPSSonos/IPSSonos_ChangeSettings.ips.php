@@ -21,9 +21,8 @@
 	 *
 	 * @file          IPSSonosChangeSettings.ips.php
 	 * @author        joki
-	 *
 	 * @version
-	 * Version 0.9.4, 11.08.2014
+	 * Version 1.0.0, 01.09.2014<br/>
 	 *
 	 * Dieses Script ist als Action Script für diverse IPSSonos Variablen hinterlegt, um
 	 * eine Änderung über das WebFront zu ermöglichen.

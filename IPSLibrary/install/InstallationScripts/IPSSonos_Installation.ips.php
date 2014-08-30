@@ -176,7 +176,7 @@
 		$RoomId = 1;
 		foreach ($RoomConfig as $GroupName=>$GroupData) {
 			$roomCategoryId = CreateCategory($GroupName, $categoryIdWebFrontRight, 10*$RoomId);
-			$roomInstanceId = IPS_GetObjectIdByIdent($GroupName, $CategoryIdData);
+			$roomInstanceId = IPS_GetObjectIdByName($GroupName, $CategoryIdData);
 		
 			// Power-Switch in Server-Tab
 			CreateLink($GroupName,             	IPS_GetObjectIDByIdent(IPSSONOS_VAR_ROOMPOWER,   	$roomInstanceId),   $instanceIdServer_Power, 10*$RoomId);

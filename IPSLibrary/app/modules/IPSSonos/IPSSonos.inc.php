@@ -23,128 +23,31 @@
 	 * IPSSonos Server API
 	 *
 	 * @file          IPSSonos.inc.php
-	 * @author        jokie
+	 * @author        joki
 	 * @version
-	 * Version 0.9.4, 12.06.2014<br/>
+	 * Version 1.0.0, 01.09.2014<br/>
 	 *
-	 * Dieses File kann von anderen Scripts per INCLUDE eingebunden werden und enthält Funktionen
-	 * um alle IPSSonos Funktionen bequem per Funktionsaufruf steueren zu können.
+	 * This include has all functions to control the IPSSonos application. The individual functions can
+	 * also be used in scripts outside the IPSLibrary allowing easy access of the SONOS devices.
+	 * 
+	 * Please find examples in the Wiki: http://www.ip-symcon.de/wiki/IPSSonos
 	 *
 	 */
 
  	include_once 'IPSSonos_Server.class.php';
 
-// ----------------------------------------------------------------------------------------------------------------------------
-// Interfaces für Server
-// ----------------------------------------------------------------------------------------------------------------------------
 
+/*********************************************************************************************
+ *  
+ *  Room Functions
+ *  
+ **********************************************************************************************/
 	/**
-	 *  @brief Brief
+	 *  @brief Powers specific room on or off
 	 *  
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
-	 */
-	function IPSSonos_SyncPlaylists() {
-		$server = IPSSonos_GetServer();
-		return $server->SendData(IPSSONOS_CMD_SERVER, null, IPSSONOS_FNC_SYNCPL, null);
-	}	
-	/**
-	 *  @brief Brief
-	 *  
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
-	 */
-	function IPSSonos_SyncRadiostations() {
-		$server = IPSSonos_GetServer();
-		return $server->SendData(IPSSONOS_CMD_SERVER, null, IPSSONOS_FNC_SYNCRD, null);
-	}
-		
-	/**
-	 *  @brief Brief
-	 *  
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
-	 */
-	function IPSSonos_QueryData() {
-		$server = IPSSonos_GetServer();
-		return $server->SendData(IPSSONOS_CMD_SERVER, null, IPSSONOS_FNC_QUERYDATA, null);
-	}	
-
-	/**
-	 *  @brief Brief
-	 *  
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
-	 */
-	function IPSSonos_SwitchAllRoomsOff() {
-		$server = IPSSonos_GetServer();
-		return $server->SendData(IPSSONOS_CMD_SERVER, null, IPSSONOS_FNC_ALLROOMSOFF, null);
-	}		
-
-	/**
-	 *  @brief Brief
-	 *  
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
-	 */	
-	function IPSSonos_GetAllRooms() {
-		$server = IPSSonos_GetServer();
-		return $server->GetData(IPSSONOS_CMD_SERVER, null, IPSSONOS_FNC_ROOMS, null);
-	}	
-
-	/**
-	 *  @brief Brief
-	 *  
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
-	 */	
-	function IPSSonos_GetAllActiveRooms() {
-		$server = IPSSonos_GetServer();
-		return $server->GetData(IPSSONOS_CMD_SERVER, null, IPSSONOS_FNC_ROOMSACTIVE, null);
-	}
-
-	/**
-	 *  @brief Brief
-	 *  
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
-	 */	
-	function IPSSonos_SetQuery($value) {
-		$server = IPSSonos_GetServer();
-		return $server->SendData(IPSSONOS_CMD_SERVER, null, IPSSONOS_FNC_SETQUERY, $value);
-	}	
-
-	/**
-	 *  @brief Brief
-	 *  
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
-	 */	
-	function IPSSonos_SetQueryTime($value) {
-		$server = IPSSonos_GetServer();
-		return $server->SendData(IPSSONOS_CMD_SERVER, null, IPSSONOS_FNC_SETQUERYTIME, $value);
-	}	
-	
-// ----------------------------------------------------------------------------------------------------------------------------
-// Interfaces für Räume
-// ----------------------------------------------------------------------------------------------------------------------------
-	
-	/**
-	 *  @brief Brief
-	 *  
-	 *  @param [in] $roomName Parameter_Description
-	 *  @param [in] $value Parameter_Description
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
+	 *  @param [in] $roomName Name of room as character
+	 *  @param [in] $value true to switch room on, false to switch room off
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_SetRoomPower($roomName, $value) {
 		$server = IPSSonos_GetServer();
@@ -152,24 +55,27 @@
 	}
 	
 	/**
-	 * Status Raumverstärker lesen
+	 * @brief Returns the power status of specific room
 	 *
-	 * @param int $instanceId ID des IPSSonos Servers
-	 * @param int $roomId Raum der ausgelesen werden soll (0-3)
-	 * @return boolean Status Raumverstärker
+	 * @param [in] $roomName Name of room as character
+	 * @return Result as boolean
 	 */
 	function IPSSonos_GetRoomPower($roomName) {
 		$server = IPSSonos_GetServer();
 		return $server->GetData(IPSSONOS_CMD_ROOM, $roomName, IPSSONOS_FNC_POWER, null);
 	}
 	
+/*********************************************************************************************
+ *  
+ *  Player Functions
+ *  
+ **********************************************************************************************/
+	
 	/**
 	 *  @brief Brief
 	 *  
-	 *  @param [in] $roomName Parameter_Description
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
+	 *  @param [in] $roomName Name of room as character
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_Play($roomName) {
 		$server = IPSSonos_GetServer();
@@ -179,10 +85,8 @@
 	/**
 	 *  @brief Brief
 	 *  
-	 *  @param [in] $roomName Parameter_Description
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
+	 *  @param [in] $roomName Name of room as character
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_Pause($roomName) {
 		$server = IPSSonos_GetServer();
@@ -192,10 +96,8 @@
 	/**
 	 *  @brief Brief
 	 *  
-	 *  @param [in] $roomName Parameter_Description
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
+	 *  @param [in] $roomName Name of room as character
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_Stop($roomName) {
 		$server = IPSSonos_GetServer();
@@ -205,10 +107,8 @@
 	/**
 	 *  @brief Brief
 	 *  
-	 *  @param [in] $roomName Parameter_Description
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
+	 *  @param [in] $roomName Name of room as character
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_Next($roomName) {
 		$server = IPSSonos_GetServer();
@@ -218,10 +118,8 @@
 	/**
 	 *  @brief Brief
 	 *  
-	 *  @param [in] $roomName Parameter_Description
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
+	 *  @param [in] $roomName Name of room as character
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_Previous($roomName) {
 		$server = IPSSonos_GetServer();
@@ -231,11 +129,9 @@
 	/**
 	 *  @brief Brief
 	 *  
-	 *  @param [in] $roomName Parameter_Description
+	 *  @param [in] $roomName Name of room as character
 	 *  @param [in] $value Parameter_Description
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_RampToVolumeMute($roomName, $value){
 		$server = IPSSonos_GetServer();
@@ -245,11 +141,9 @@
 	/**
 	 *  @brief Brief
 	 *  
-	 *  @param [in] $roomName Parameter_Description
+	 *  @param [in] $roomName Name of room as character
 	 *  @param [in] $value Parameter_Description
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_RampToVolumeMuteSlow($roomName, $value){
 		$server = IPSSonos_GetServer();
@@ -259,11 +153,9 @@
 	/**
 	 *  @brief Brief
 	 *  
-	 *  @param [in] $roomName Parameter_Description
+	 *  @param [in] $roomName Name of room as character
 	 *  @param [in] $value Parameter_Description
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_RampToVolume($roomName, $value){
 		$server = IPSSonos_GetServer();
@@ -273,11 +165,9 @@
 	/**
 	 *  @brief Brief
 	 *  
-	 *  @param [in] $roomName Parameter_Description
+	 *  @param [in] $roomName Name of room as character
 	 *  @param [in] $value Parameter_Description
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_SetShuffle($roomName, $value){
 		$server = IPSSonos_GetServer();
@@ -287,10 +177,8 @@
 	/**
 	 *  @brief Brief
 	 *  
-	 *  @param [in] $roomName Parameter_Description
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
+	 *  @param [in] $roomName Name of room as character
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_GetShuffle($roomName){
 		$server = IPSSonos_GetServer();
@@ -300,11 +188,9 @@
 	/**
 	 *  @brief Brief
 	 *  
-	 *  @param [in] $roomName Parameter_Description
+	 *  @param [in] $roomName Name of room as character
 	 *  @param [in] $value Parameter_Description
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_SetRepeat($roomName, $value){
 		$server = IPSSonos_GetServer();
@@ -314,48 +200,44 @@
 	/**
 	 *  @brief Brief
 	 *  
-	 *  @param [in] $roomName Parameter_Description
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
+	 *  @param [in] $roomName Name of room as character
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_GetRepeat($roomName){
 		$server = IPSSonos_GetServer();
 		return $server->GetData(IPSSONOS_CMD_AUDIO, $roomName, IPSSONOS_FNC_REPEAT, null);
 	}		
 
-
 	/**
-	 * Laustärke setzen
-	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
-	 * @param int $roomId Raum der geändert werden soll (0-3)
-	 * @param int $value Lautstärke (0-40)
-	 * @return boolean Funktions Ergebnis, TRUE für OK, FALSE für Fehler
+	 *  @brief Brief
+	 *  
+	 *  @param [in] $roomName Name of room as character
+	 *  @param [in] $value Parameter_Description
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_SetVolume($roomName, $value) {
 		$server = IPSSonos_GetServer();
 		return $server->SendData(IPSSONOS_CMD_AUDIO, $roomName, IPSSONOS_FNC_VOLUME, $value);
 	}
+	
 	/**
-	 * Laustärke erhöhen
-	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
-	 * @param int $roomId Raum der geändert werden soll (0-3)
-	 * @param int $value Lautstärke (0-40)
-	 * @return boolean Funktions Ergebnis, TRUE für OK, FALSE für Fehler
+	 *  @brief Brief
+	 *  
+	 *  @param [in] $roomName Name of room as character
+	 *  @param [in] $value Parameter_Description
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_IncVolume($roomName, $value) {
 		$server = IPSSonos_GetServer();
 		return $server->SendData(IPSSONOS_CMD_AUDIO, $roomName, IPSSONOS_FNC_VOLUME_INC, $value);
 	}
+	
 	/**
-	 * Laustärke verringern
-	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
-	 * @param int $roomId Raum der geändert werden soll (0-3)
-	 * @param int $value Lautstärke (0-40)
-	 * @return boolean Funktions Ergebnis, TRUE für OK, FALSE für Fehler
+	 *  @brief Brief
+	 *  
+	 *  @param [in] $roomName Name of room as character
+	 *  @param [in] $value Parameter_Description
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_DecVolume($roomName, $value) {
 		$server = IPSSonos_GetServer();
@@ -363,24 +245,23 @@
 	}
 		
 	/**
-	 * Laustärke lesen
-	 *
-	 * @param int $instanceId  ID des IPSSonos Servers
-	 * @param int $roomId Raum der ausgelesen werden soll (0-3)
-	 * @return int Lautstärke (0-40)
+	 *  @brief Brief
+	 *  
+	 *  @param [in] $roomName Name of room as character
+	 *  @param [in] $value Parameter_Description
+	 *  @return Result as boolean
 	 */
-	function IPSSonos_GetVolume($instanceId, $roomId) {
-		$server = IPSSonos_GetServer($instanceId);
-		return $server->GetData(IPSSONOS_CMD_AUDIO, $roomId, IPSSONOS_FNC_VOLUME, null);
-	}
+//	function IPSSonos_GetVolume($instanceId, $roomId) {
+//		$server = IPSSonos_GetServer($instanceId);
+//		return $server->GetData(IPSSONOS_CMD_AUDIO, $roomId, IPSSONOS_FNC_VOLUME, null);
+//	}
 
 	/**
-	 * Muting setzen
-	 *
-	 * @param int $instanceId ID des IPSSonos Servers
-	 * @param int $roomId Raum der geändert werden soll (0-3)
-	 * @param string $value TRUE oder '1' für An, FALSE oder '0' für Aus
-	 * @return boolean Funktions Ergebnis, TRUE für OK, FALSE für Fehler
+	 *  @brief Set status of the mute function
+	 *  
+	 *  @param [in] $roomName Name of room as character
+	 *  @param [in] $value True to switch on, false to switch off
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_SetMute($roomName, $value) {
 		$server = IPSSonos_GetServer();
@@ -388,11 +269,10 @@
 	}
 
 	/**
-	 * Status Muting lesen
-	 *
-	 * @param int $instanceId ID des IPSSonos Servers
-	 * @param int $roomId Raum der ausgelesen werden soll (0-3)
-	 * @return boolean Status Muting
+	 *  @brief Returns the status of the mute function
+	 *  
+	 *  @param [in] $roomName Name of room as character
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_GetMute($roomName) {
 		$server = IPSSonos_GetServer($instanceId);
@@ -400,11 +280,10 @@
 	}
 	
 	/**
-	 * Switch Mute
-	 *
-	 * @param int $instanceId ID des IPSSonos Servers
-	 * @param int $roomId Raum der ausgelesen werden soll (0-3)
-	 * @return boolean Status Muting
+	 *  @brief Switch between the mute status
+	 *  
+	 *  @param [in] $roomName Name of room as character
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_SwitchMute($roomName) {
 		$server = IPSSonos_GetServer($instanceId);
@@ -412,13 +291,11 @@
 	}
 
 	/**
-	 *  @brief Brief
+	 *  @brief Starts playing of a specified Sonos playlist
 	 *  
-	 *  @param [in] $roomName Parameter_Description
-	 *  @param [in] $value Parameter_Description
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
+	 *  @param [in] $roomName Name of room as character
+	 *  @param [in] $value ID as integer of the playlist
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_PlayPlaylistByID($roomName, $value) {
 		$server = IPSSonos_GetServer();
@@ -426,51 +303,135 @@
 	}	
 
 	/**
-	 *  @brief Brief
+	 *  @brief Starts playing of a specified Sonos playlist
 	 *  
-	 *  @param [in] $roomName Parameter_Description
-	 *  @param [in] $value Parameter_Description
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
+	 *  @param [in] $roomName Name of room as character
+	 *  @param [in] $value Name as character of the playlist as defined in the Sonos controller
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_PlayPlaylistByName($roomName, $value) {
 		$server = IPSSonos_GetServer();
 		return $server->SendData(IPSSONOS_CMD_AUDIO, $roomName, IPSSONOS_FNC_PLAYPLNAME, $value);
 	}
+	
 	/**
-	 *  @brief Brief
+	 *  @brief Starts playing of a specified radio station
 	 *  
-	 *  @param [in] $roomName Parameter_Description
-	 *  @param [in] $value Parameter_Description
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
-		 */	function IPSSonos_PlayRadiostationByID($roomName, $value) {
+	 *  @param [in] $roomName Name of room as character
+	 *  @param [in] $value ID as integer of the radio station
+	 *  @return Result as boolean
+	 */
+	function IPSSonos_PlayRadiostationByID($roomName, $value) {
 		$server = IPSSonos_GetServer();
 		return $server->SendData(IPSSONOS_CMD_AUDIO, $roomName, IPSSONOS_FNC_PLAYRDID, $value);
 	}	
 
 	/**
-	 *  @brief Brief
+	 *  @brief Starts playing of a specified radio station
 	 *  
-	 *  @param [in] $roomName Parameter_Description
-	 *  @param [in] $value Parameter_Description
-	 *  @return Return_Description
-	 *  
-	 *  @details Details
+	 *  @param [in] $roomName Name of room as character
+	 *  @param [in] $value Name as character of radio station as defined in the Sonos controller
+	 *  @return Result as boolean
 	 */
 	function IPSSonos_PlayRadiostationByName($roomName, $value) {
 		$server = IPSSonos_GetServer();
 		return $server->SendData(IPSSONOS_CMD_AUDIO, $roomName, IPSSONOS_FNC_PLAYRDNAME, $value);
 	}		
 	
-// ----------------------------------------------------------------------------------------------------------------------------
-// Hilfsfunktionen
-// ----------------------------------------------------------------------------------------------------------------------------
+/*********************************************************************************************
+ *  
+ *  Server Functions
+ *  
+ **********************************************************************************************/
+	/**
+	 *  @brief Powers all rooms off
+	 *  
+	 *  @return Result as boolean
+	 */
+	function IPSSonos_SwitchAllRoomsOff() {
+		$server = IPSSonos_GetServer();
+		return $server->SendData(IPSSONOS_CMD_SERVER, null, IPSSONOS_FNC_ALLROOMSOFF, null);
+	}		
+
+	/**
+	 *  @brief Get a list of all rooms
+	 *  
+	 *  @return Array listing all defined rooms
+	 */	
+	function IPSSonos_GetAllRooms() {
+		$server = IPSSonos_GetServer();
+		return $server->GetData(IPSSONOS_CMD_SERVER, null, IPSSONOS_FNC_ROOMS, null);
+	}	
+
+	/**
+	 *  @brief Get a list of rooms currently powered on
+	 *  
+	 *  @return Array listing all rooms currently active
+	 */	
+	function IPSSonos_GetAllActiveRooms() {
+		$server = IPSSonos_GetServer();
+		return $server->GetData(IPSSONOS_CMD_SERVER, null, IPSSONOS_FNC_ROOMSACTIVE, null);
+	}
+
+	/**
+	 *  @brief Sets status of the query functionality, retrieving details from players like current song, player state, ...
+	 *  
+	 *  @param [in] $value On/Off as boolean 
+	 *  @return Result as boolean
+	 */	
+	function IPSSonos_SetQuery($value) {
+		$server = IPSSonos_GetServer();
+		return $server->SendData(IPSSONOS_CMD_SERVER, null, IPSSONOS_FNC_SETQUERY, $value);
+	}	
+
+	/**
+	 *  @brief Sets the period of querying the player details 
+	 *  
+	 *  @param [in] $value Period in seconds
+	 *  @return Result as boolean
+	 */	
+	function IPSSonos_SetQueryTime($value) {
+		$server = IPSSonos_GetServer();
+		return $server->SendData(IPSSONOS_CMD_SERVER, null, IPSSONOS_FNC_SETQUERYTIME, $value);
+	}	
+	
+	/**
+	 *  @brief Brief
+	 *  
+	 *  @return Synchronize of playlists stored in "Sonos Playlists" section of the Sonos system
+	 */
+	function IPSSonos_SyncPlaylists() {
+		$server = IPSSonos_GetServer();
+		return $server->SendData(IPSSONOS_CMD_SERVER, null, IPSSONOS_FNC_SYNCPL, null);
+	}	
+	/**
+	 *  @brief Synchronize of radio stations stored in "My Radio Stations" section of the Sonos system
+	 *  
+	 *  @return Result as boolean
+	 */
+	function IPSSonos_SyncRadiostations() {
+		$server = IPSSonos_GetServer();
+		return $server->SendData(IPSSONOS_CMD_SERVER, null, IPSSONOS_FNC_SYNCRD, null);
+	}
+		
+	/**
+	 *  @brief Triggers a query for player details of the currently active rooms
+	 *  
+	 *  @return Result as boolean
+	 */
+	function IPSSonos_QueryData() {
+		$server = IPSSonos_GetServer();
+		return $server->SendData(IPSSONOS_CMD_SERVER, null, IPSSONOS_FNC_QUERYDATA, null);
+	}	
+	
+/*********************************************************************************************
+ *  
+ *  Additional Functions
+ *  
+ **********************************************************************************************/
 	 
 	/**
-	 *  @brief Get Server
+	 *  @brief Get Server ID of IPSSonos
 	 *  
 	 *  @return IPSSonos Server Object
 	 *  
@@ -480,12 +441,6 @@
 		return new IPSSonos_Server($instanceId);
 	}
 	
-	/**
-	 *  @brief 
-	 *  
-	 *  @return IPSSonos Server Object
-	 *  
-	 */	 
 	function WriteBoolean($value) {
 	   	if ($value)  {
 			$result = 'an';

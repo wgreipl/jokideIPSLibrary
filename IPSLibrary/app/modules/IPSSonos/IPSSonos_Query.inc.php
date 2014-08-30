@@ -27,11 +27,9 @@
    /**
     * @class IPSSonos_Query
     *
-    * 
-    *
-    * @author joki
-    * @version
-    * Version 0.9.4, 11.08.2014<br/>
+	* @author        joki
+	* @version
+	* Version 1.0.0, 01.09.2014<br/>
     */
 	include_once 'IPSSonos_Server.class.php';
 	IPSUtils_Include ("IPSSonos.inc.php", 				"IPSLibrary::app::modules::IPSSonos");

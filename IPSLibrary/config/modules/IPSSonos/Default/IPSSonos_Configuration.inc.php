@@ -8,7 +8,7 @@
 	 * @file          IPSSonos_Configuration.inc.php
 	 * @author        joki
 	 * @version
-	 * Version 0.9.4, 12.06.2014<br/>
+	 * Version 1.0.0, 01.09.2014<br/>
 	 *
 	 */
 	IPSUtils_Include ("IPSSonos_Constants.inc.php",      "IPSLibrary::app::modules::IPSSonos");

@@ -29,9 +29,9 @@
     *
     * Definiert ein IPSSonos_Room Objekt
     *
-    * @author joki
-    * @version
-    * Version 0.9, 31.01.2012<br/>
+	* @author        joki
+	* @version
+	* Version 1.0.0, 01.09.2014<br/>
     */
 	IPSUtils_Include ("IPSSonos_Constants.inc.php",       "IPSLibrary::app::modules::IPSSonos");
 	IPSUtils_Include ("IPSSonos_Configuration.inc.php",   "IPSLibrary::config::modules::IPSSonos");
