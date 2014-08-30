@@ -143,11 +143,11 @@
 
 				// Update remote ------------------------------------------------------------------------------------------------------			
 
-				// [URI] => x-sonos-spotify
-				// [URI] => x-rincon-mp3radio
-				// [URI] => x-file-cifs
-				// [TrackURI] => x-sonos-htastream:RINCON_000E58B264B501400:spdif
-				// [TrackURI] => x-rincon:RINCON_000E5872E10801400
+				// Spotify:			[URI] => x-sonos-spotify
+				// Intunes Radio:	[URI] => x-rincon-mp3radio
+				// Library:			[URI] => x-file-cifs
+				// External input:	[TrackURI] => x-sonos-htastream:RINCON_000E58B264B501400:spdif
+				// Group Slave:		[TrackURI] => x-rincon:RINCON_000E5872E10801400
 				
 				// Identify type of player
 				if ($Status === 3) {
@@ -155,8 +155,8 @@
 					$PlayerType = "Stop";
 				
 				}
-				elseif ((substr($PosInfo["URI"], 0, 11) === "x-file-cifs") or 
-						(substr($PosInfo["URI"], 0, 15) === "x-sonos-spotify")) {
+				elseif (($PosInfo["URI"] != "") and 
+						(substr($PosInfo["URI"], 0, 17) != "x-rincon-mp3radio")) {
 				
 					$PlayerType = "Song";
 					
