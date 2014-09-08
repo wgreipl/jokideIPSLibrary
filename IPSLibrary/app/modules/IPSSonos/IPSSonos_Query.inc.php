@@ -31,7 +31,7 @@
     *
     * @author joki
     * @version
-    * Version 1.0.0, 01.09.2014<br/>
+    * Version 1.0.1, 08.09.2014<br/>
     */
 	include_once 'IPSSonos_Server.class.php';
 	IPSUtils_Include ("IPSSonos.inc.php", 				"IPSLibrary::app::modules::IPSSonos");
@@ -100,7 +100,7 @@
 				}				
 				// Check that Sonos device is reachable					
 				if( Sys_Ping( $room->IPAddr, 200 ) == false) {
-					IPSLogger_Wrn(__file__, 'Raum '.$room->roomName.' konnte nicht abgefragt werden, da Sonos-Gerät nicht erreichbar!');
+//					IPSLogger_Wrn(__file__, 'Raum '.$room->roomName.' konnte nicht abgefragt werden, da Sonos-Gerät nicht erreichbar!');
 					continue; // Next foreach - loop
 				}
 				
@@ -196,9 +196,8 @@
 						// do not set buffering info
 						if($PosInfo["streamContent"]!="ZPSTR_BUFFERING" &&
 							$PosInfo["streamContent"]!="ZPSTR_CONNECTING"
-							&& $PosInfo["streamContent"]!="")
-							{
-						 $Title  = preg_replace('#(.*?)\|(.*)#is','$1',$PosInfo["streamContent"]); // Tunein sends additional Information which could be sperated by a |
+							&& $PosInfo["streamContent"]!="") {
+								$Title  = utf8_decode(utf8_decode(preg_replace('#(.*?)\|(.*)#is','$1',$PosInfo["streamContent"]))); // Tunein sends additional Information which could be sperated by a |
 						 } 
 					}
 				}
@@ -253,7 +252,7 @@
 					
 					case "Radio":	
 						$HTMLRemote = $HTMLRemote. 			"<tr>";
-						$HTMLRemote = $HTMLRemote.				"<td rowspan=\"3\"><img alt=\"Cover\" height=\"150\" src=\"".$AlbumArtURI."\" width=\"150\" /></td>";
+						$HTMLRemote = $HTMLRemote.    			"<td rowspan=\"3\"><img alt=\"\" src=\"".$AlbumArtURI."\" /></td>";  
 						$HTMLRemote = $HTMLRemote.				"<td style=\"text-align: left; vertical-align: top;\">&nbsp;<b>".$Artist."</b></td>";
 						$HTMLRemote = $HTMLRemote.			"</tr>";
 						$HTMLRemote = $HTMLRemote.			"<tr>";
